@@ -1,19 +1,18 @@
 <div id="mainContact">
   <div class="header">
-    <h1>contact page</h1>
+    <h1>leave your feedback here!</h1>
   </div>
   <div id="logInWindow">
-    <form>
-      <form>
-        <div class="input-group">
+    <form action="" method="post">
+      <div class="input-group">
         <span class="input-group-addon"><i
             class="glyphicon glyphicon-user"
           ></i></span>
         <input
-          id="fName"
+          id="feedbackName"
           type="text"
           class="form-control"
-          name="fName"
+          name="feedbackName"
           placeholder=" first name"
         />
       </div>
@@ -22,10 +21,10 @@
             class="glyphicon glyphicon-user"
           ></i></span>
         <input
-          id="email"
+          id="feedbackEmail"
           type="email"
           class="form-control"
-          name="email"
+          name="feedbackEmail"
           placeholder=" email"
         />
       </div>
@@ -34,15 +33,20 @@
             class="glyphicon glyphicon-lock"
           ></i></span>
         <input
-          id="message"
+          id="feedback"
           type="text"
           class="form-control"
-          name="message"
+          name="feedback"
           placeholder=" message..."
         />
       </div>
-      <input id="submitButton" class="btn btn-outline-dark" type="submit" value="submit">
-      </form>
+      <input
+        id="submitButton"
+        class="btn btn-outline-dark"
+        type="submit"
+        value="submit"
+      />
+    </form>
   </div>
 
 </div>

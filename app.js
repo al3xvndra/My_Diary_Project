@@ -46,13 +46,40 @@ app.post("/create", function (request, response) {
   const contentTitle = request.body.contentTitle;
   const content = request.body.content;
 
-  data.posts.unshift({
-    postId: data.posts.at(-1).id + 1,
+  const newPost = {
+    postId: data.posts.length + 1,
     date: contentDate,
     title: contentTitle,
     content: content,
-  });
+  };
+
+  data.posts.unshift(newPost);
+  console.log(data.posts);
   response.redirect("/posts");
+});
+
+app.get("/feedback", function (request, response) {
+  const model = {
+    feedback: data.feedback,
+  };
+  response.render("feedback.hbs", model);
+});
+
+app.post("/contact", function (request, response) {
+  const feedbackName = request.body.feedbackName;
+  const feedbackEmail = request.body.feedbackEmail;
+  const feedback = request.body.feedback;
+
+  const newFeedback = {
+    feedbackId: data.feedback.length + 1,
+    fName: feedbackName,
+    email: feedbackEmail,
+    feedback: feedback,
+  };
+
+  data.feedback.unshift(newFeedback);
+  console.log(data.feedback);
+  response.redirect("/feedback");
 });
 
 app.get("/contact", function (request, response) {

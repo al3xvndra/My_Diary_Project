@@ -1,0 +1,16 @@
+<div id="mainContact">
+  <div class="header">
+    <h1>feedback</h1>
+  </div>
+  {{#if feedback.length}}
+    {{#each feedback}}
+      <div class="post">
+        <h4 id="title">{{email}}</h4>
+        <h5>{{feedback}}</h5>
+        <h5 id="signature">{{fName}}</h5>
+      </div>
+    {{/each}}
+  {{else}}
+    <h4 id="noContent">nothing here</h4>
+  {{/if}}
+</div>

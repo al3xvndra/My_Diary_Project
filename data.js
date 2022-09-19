@@ -6,26 +6,14 @@ exports.posts = [
     content:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
   },
-  {
-    postId: 2,
-    date: "18/09/22",
-    title: "Creating the website",
-    content:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  },
-  {
-    postId: 3,
-    date: "18/09/22",
-    title: "New post",
-    content:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  },
 ];
 
-exports.contact = [
+exports.feedback = [
   {
+    feedbackId: 1,
+    fName: "Michael",
     email: "me@gmail.com",
-    message: "whatever",
+    feedback: "whatever",
   },
 ];
 
