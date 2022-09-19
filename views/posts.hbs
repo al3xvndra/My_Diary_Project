@@ -1,0 +1,17 @@
+<div id="mainPosts">
+  <div class="header">
+    <h1>all posts</h1>
+  </div>
+  {{#if posts.length}}
+    {{#each posts}}
+      <div class="post">
+        <h5>{{date}}</h5>
+        <h4 id="title">{{title}}</h4>
+        <h5>{{content}}</h5>
+        <h5 id="signature">Alex</h5>
+      </div>
+    {{/each}}
+  {{else}}
+    <h4 id="noContent">nothing here</h4>
+  {{/if}}
+</div>

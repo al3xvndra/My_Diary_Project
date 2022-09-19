@@ -1,0 +1,52 @@
+<div id="mainPosts">
+  <div class="header">
+    <h1>all posts</h1>
+  </div>
+  <div class="post">
+    <div class="inputField">
+      <input
+        id="contentDate"
+        type="date"
+        class="inputStyle"
+        name="contentDate"
+        placeholder=" date"
+      />
+    </div>
+    <div class="inputField">
+      <input
+        id="contentTitle"
+        type="text"
+        class="inputStyle"
+        name="contentTitle"
+        placeholder=" title"
+      />
+    </div>
+    <div class="inputField">
+      <input
+        id="content"
+        type="text"
+        class="inputStyle"
+        name="content"
+        placeholder=" content"
+      />
+    </div>
+    <h5 id="signature">Alex</h5>
+    <button id="add" class="buttonStyle" type="submit">post</button>
+  </div>
+  {{#if posts.length}}
+    {{#each posts}}
+      <div class="post">
+        <h5>{{date}}</h5>
+        <h4 id="title">{{title}}</h4>
+        <h5>{{content}}</h5>
+        <h5 id="signature">Alex</h5>
+        <div id="editing">
+          <button id="edit" class="buttonStyle" type="submit">edit</button>
+          <button id="delete" class="buttonStyle" type="submit">delete</button>
+        </div>
+      </div>
+    {{/each}}
+  {{else}}
+    <h4 id="noContent">nothing here</h4>
+  {{/if}}
+</div>
