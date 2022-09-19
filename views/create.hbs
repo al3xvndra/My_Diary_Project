@@ -3,35 +3,37 @@
     <h1>all posts</h1>
   </div>
   <div class="post">
-    <div class="inputField">
-      <input
-        id="contentDate"
-        type="date"
-        class="inputStyle"
-        name="contentDate"
-        placeholder=" date"
-      />
-    </div>
-    <div class="inputField">
-      <input
-        id="contentTitle"
-        type="text"
-        class="inputStyle"
-        name="contentTitle"
-        placeholder=" title"
-      />
-    </div>
-    <div class="inputField">
-      <input
-        id="content"
-        type="text"
-        class="inputStyle"
-        name="content"
-        placeholder=" content"
-      />
-    </div>
-    <h5 id="signature">Alex</h5>
-    <button id="add" class="buttonStyle" type="submit">post</button>
+    <form action="" method="post">
+      <div class="inputField">
+        <input
+          id="contentDate"
+          type="date"
+          class="inputStyle"
+          name="contentDate"
+          placeholder=" date"
+        />
+      </div>
+      <div class="inputField">
+        <input
+          id="contentTitle"
+          type="text"
+          class="inputStyle"
+          name="contentTitle"
+          placeholder=" title"
+        />
+      </div>
+      <div class="inputField">
+        <input
+          id="content"
+          type="text"
+          class="inputStyle"
+          name="content"
+          placeholder=" content"
+        />
+      </div>
+      <h5 id="signature">Alex</h5>
+      <input id="add" class="buttonStyle" type="submit" value="post" />
+    </form>
   </div>
   {{#if posts.length}}
     {{#each posts}}

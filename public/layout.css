@@ -17,8 +17,12 @@ nav {
 a {
   text-decoration: none !important;
   color: black !important;
+  padding: 1% 2% 1% 2%;
 }
 
+a:hover {
+  background-color: rgb(240, 240, 240);
+}
 main {
   margin-left: 10%;
   margin-right: 10%;
@@ -31,9 +35,9 @@ footer {
   font-family: "Raleway";
 }
 
-#create {
+/* #create {
   display: none;
-}
+} */
 
 /* home page */
 
