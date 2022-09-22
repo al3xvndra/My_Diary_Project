@@ -20,3 +20,14 @@
     <h5>Enough scrolling, see ya on the next page 👋</h5>
   </div>
 </div>
+
+{{#if comments.length}}
+  {{#each comments}}
+    <div class="comment">
+      <h5>{{comment}}</h5>
+      <h5>{{commentId}}</h5>
+    </div>
+  {{/each}}
+{{else}}
+  <h5>no comments yet</h5>
+{{/if}}
