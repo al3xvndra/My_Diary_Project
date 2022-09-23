@@ -15,6 +15,7 @@ nav {
   position: fixed;
   background-color: white;
   width: 100%;
+  z-index: 5;
 }
 
 a {
@@ -79,6 +80,10 @@ footer {
 
 .comment {
   background-color: aquamarine;
+}
+
+#existingComments {
+  margin-bottom: 4rem;
 }
 
 #mainPosts {

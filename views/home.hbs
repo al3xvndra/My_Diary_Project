@@ -2,6 +2,11 @@
   <div class="header">
     <h1>hi, I'm Alex! welcome to my diary</h1>
   </div>
+  {{#if session.isLoggedIn}}
+    <p>You are logged in.</p>
+  {{else}}
+    <p>Not logged in</p>
+  {{/if}}
   <div class="post">
     <h5>Nice to meet you! I created this website to share my thoughts, memories,
       and everyday things with anyone who reads this. Feel free to join me in
@@ -20,14 +25,3 @@
     <h5>Enough scrolling, see ya on the next page 👋</h5>
   </div>
 </div>
-
-{{#if comments.length}}
-  {{#each comments}}
-    <div class="comment">
-      <h5>{{comment}}</h5>
-      <h5>{{commentId}}</h5>
-    </div>
-  {{/each}}
-{{else}}
-  <h5>no comments yet</h5>
-{{/if}}

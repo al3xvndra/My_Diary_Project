@@ -2,4 +2,16 @@
   <div class="header">
     <h1>about the page</h1>
   </div>
+
+  {{#if comments.length}}
+    {{#each comments}}
+      <div class="comment">
+        <h5>{{comment}}</h5>
+        <h5>{{id}}</h5>
+      </div>
+    {{/each}}
+  {{else}}
+    <h5>no comments yet</h5>
+  {{/if}}
+
 </div>

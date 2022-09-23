@@ -4,17 +4,43 @@ const expressHandlebars = require("express-handlebars");
 const bodyParser = require("body-parser");
 const sqlite3 = require("sqlite3");
 const db = new sqlite3.Database("MyVirtualDiaryDatabase.db");
+const expressSession = require("express-session");
+const adminUsername = "alex";
+const adminPassword = "me";
 
 db.run(
   `CREATE TABLE IF NOT EXISTS posts(
   id INTEGER PRIMARY KEY,
-  title TEXT
+  title TEXT,
   success TEXT,
   struggle TEXT, 
   content TEXT)`
 );
 
+db.run(
+  `CREATE TABLE IF NOT EXISTS feedback(
+  id INTEGER PRIMARY KEY,
+  name TEXT,
+  feedback TEXT,
+  email TEXT)`
+);
+
+db.run(
+  `CREATE TABLE IF NOT EXISTS comments(
+    id INTEGER PRIMARY KEY,
+    postID INTEGER,
+    comment TEXT,
+    FOREIGN KEY(postID) REFERENCES posts(id))`
+);
+
 const app = express();
+
+app.engine(
+  "hbs",
+  expressHandlebars.engine({
+    defaultLayout: "main.hbs",
+  })
+);
 
 app.use(express.static("public"));
 
@@ -24,43 +50,89 @@ app.use(
   })
 );
 
-app.engine(
-  "hbs",
-  expressHandlebars.engine({
-    defaultLayout: "main.hbs",
+app.use(
+  express.urlencoded({
+    extended: false,
   })
 );
 
-app.get("/", function (request, response) {
-  const model = {
-    comments: data.comments,
-  };
-  response.render("home.hbs", model);
+app.use(
+  expressSession({
+    saveUninitialized: false,
+    resave: false,
+    secret: "dfhgj",
+  })
+);
+
+app.use(function (request, response, next) {
+  response.locals.session = request.session;
+  next();
 });
+
+app.get("/", function (request, response) {
+  response.render("home.hbs");
+});
+
+// app.get("/posts", function (request, response) {
+//   const query = `SELECT * FROM posts`;
+
+//   db.all(query, function (error, posts) {
+//     const query = `SELECT * FROM comments`;
+
+//     db.all(query, function (error, comments) {
+//       for (const post of posts) {
+//         post.comments = comments.filter((c) => c.postID == post.id);
+//       }
+
+//       const model = {
+//         posts,
+//       };
+//       response.render("posts.hbs", model);
+//     });
+//   });
+// });
+
+// app.post("/posts/:id", function (request, response) {
+//   // const postID = posts.id;
+//   const comment = request.body.comment;
+
+//   const query = `INSERT INTO comments (postID, comment) VALUES(?, ?)`;
+
+//   const values = [postID, comment];
+
+//   db.run(query, values, function (error) {
+//     response.redirect("/about");
+//     console.log("new comment added");
+//   });
+// });
 
 app.get("/posts", function (request, response) {
   const query = `SELECT * FROM posts`;
 
   db.all(query, function (error, posts) {
-    const model = {
-      posts,
-    };
-    response.render("posts.hbs", model);
+    const query = `SELECT * FROM comments`;
+
+    db.all(query, function (error, comments) {
+      const model = {
+        posts,
+      };
+      response.render("posts.hbs", model);
+    });
   });
 });
 
 app.post("/posts", function (request, response) {
-  const commentContent = request.body.comment;
+  // const postID = posts.id;
+  const comment = request.body.comment;
 
-  const newComment = {
-    commentId: data.comments.length + 1,
-    // postId: data.posts.postId,
-    comment: commentContent,
-  };
+  const query = `INSERT INTO comments (comment) VALUES(?)`;
 
-  data.comments.unshift(newComment);
-  console.log(data.comments);
-  response.redirect("/posts");
+  const values = [comment];
+
+  db.run(query, values, function (error) {
+    response.redirect("/about");
+    console.log("new comment added");
+  });
 });
 
 app.get("/create", function (request, response) {
@@ -71,7 +143,6 @@ app.get("/create", function (request, response) {
 });
 
 app.post("/create", function (request, response) {
-  // const data = request.body.postDate;
   const title = request.body.postTitle;
   const success = request.body.postSuccess;
   const struggle = request.body.postStruggle;
@@ -118,24 +189,36 @@ app.get("/contact", function (request, response) {
 });
 
 app.get("/thankYou", function (request, response) {
-  const model = {
-    thankYou: data.thankYou,
-  };
-  response.render("thankYou.hbs", model);
+  response.render("thankYou.hbs");
 });
 
 app.get("/about", function (request, response) {
-  const model = {
-    logIn: data.logIn,
-  };
-  response.render("about.hbs", model);
+  const query = `SELECT * FROM comments`;
+  db.all(query, function (error, comments) {
+    const model = {
+      comments,
+    };
+    response.render("about.hbs", model);
+  });
 });
 
 app.get("/logIn", function (request, response) {
-  const model = {
-    logIn: data.logIn,
-  };
-  response.render("logIn.hbs", model);
+  response.render("logIn.hbs");
+});
+
+app.post("/logIn", function (request, response) {
+  const username = request.body.username;
+  const password = request.body.password;
+
+  if (username == adminUsername && password == adminPassword) {
+    request.session.isLoggedIn = true;
+    response.redirect("/");
+  } else {
+    const model = {
+      failedToLogIn: true,
+    };
+    response.render("logIn.hbs", model);
+  }
 });
 
 app.listen(8080);

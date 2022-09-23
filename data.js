@@ -1,7 +1,7 @@
 exports.posts = [
   {
-    postId: 1, //primary key
-    date: "18/09/22",
+    id: 1, //primary key
+    date: "23/09/2022",
     title: "Creating the website",
     success: "I made delicious pancakes",
     struggle: "I burnt a pan",
@@ -13,24 +13,16 @@ exports.posts = [
 exports.feedback = [
   {
     feedbackId: 1, //primary key
-    fName: "Michael",
-    email: "me@gmail.com",
+    name: "Michael",
     feedback: "whatever",
+    email: "me@gmail.com",
   },
 ];
 
 exports.comments = [
   {
-    commentId: 2, //primary key
-    commentDate: 22 / 09 / 22,
-    // postId: 2, foreign key
+    id: 2, //primary key
+    postID: 2, //foreign key
     comment: "Me too",
-  },
-  {
-    commentId: 1, //primary key
-    // postId: 2, foreign key
-    date: "22/09/22",
-    time: "12:32:12",
-    comment: "I love this post!",
   },
 ];

@@ -37,16 +37,17 @@
     </form>
   </div>
   <div class="commentsSection" id="existingComments">
-    {{#if comments.length}}
-      {{#each comments}}
+    {{#if post.comments.length}}
+      {{#each post.comments}}
         <div class="comment">
           <h5>{{comment}}</h5>
-          <h5>{{commentId}}</h5>
+          <h5>{{id}}</h5>
         </div>
       {{/each}}
     {{else}}
       <h5>no comments yet</h5>
     {{/if}}
+    
   </div>
 </div>
 {{/each}}
