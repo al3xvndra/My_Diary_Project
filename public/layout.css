@@ -166,6 +166,14 @@ form {
   display: inline-flex;
 }
 
+/* comments page */
+
+#goBack {
+  position: absolute;
+  margin: 50 50 50 50;
+  font-family: Barlow;
+}
+
 /* bootstrap elements */
 
 .btn-outline-dark {

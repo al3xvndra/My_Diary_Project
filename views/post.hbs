@@ -1,13 +1,15 @@
 <div id="mainPosts">
   <div class="header">
-    <h1>all posts</h1>
+    <a href="/posts" id="goBack">go back</a>
+    <h1>comment below!</h1>
   </div>
   {{#if post}}
     <div class="post">
-      <p>The post
-        {{post.id}}
-        with the title: "{{post.title}}" says:
-        {{post.content}}</p>
+      <h4 id="title">{{post.title}}</h4>
+      <h5>{{post.success}}</h5>
+      <h5>{{post.struggle}}</h5>
+      <h5>{{post.content}}</h5>
+      <h5 id="signature">Alex</h5>
     </div>
     {{! comments section }}
     <div class="commentsSection">
