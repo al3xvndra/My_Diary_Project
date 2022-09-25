@@ -1,0 +1,50 @@
+<div id="mainPosts">
+  <div class="header">
+    <h1>all posts</h1>
+  </div>
+  {{#if post}}
+    <div class="post">
+      <p>The post
+        {{post.id}}
+        with the title: "{{post.title}}" says:
+        {{post.content}}</p>
+    </div>
+    {{! comments section }}
+    <div class="commentsSection">
+      <form action="" method="post" class="commentsGroup">
+        <div class="input-group">
+          <span class="input-group-addon"><i
+              class="glyphicon glyphicon-lock"
+            ></i></span>
+          <input
+            id="comment"
+            type="text"
+            class="form-control"
+            name="comment"
+            placeholder=" comment here..."
+          />
+        </div>
+        <input
+          id="submitButton"
+          class="btn btn-outline-dark"
+          type="submit"
+          value="submit"
+        />
+      </form>
+    </div>
+    <div class="commentsSection" id="existingComments">
+      {{#if comments.length}}
+        {{#each comments}}
+          <div class="comment">
+            <h5>{{comment}}</h5>
+            <h5>{{id}}</h5>
+          </div>
+        {{/each}}
+      {{else}}
+        <h5>no comments yet</h5>
+      {{/if}}
+    </div>
+  {{else}}
+    <h5>nothing here</h5>
+  {{/if}}
+</div>

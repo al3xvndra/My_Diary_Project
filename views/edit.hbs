@@ -1,6 +1,6 @@
 <div id="mainPosts">
   <div class="header">
-    <h1>all posts</h1>
+    <h1>edit</h1>
   </div>
   <div class="post">
     <form action="" method="post">
@@ -56,33 +56,4 @@
       <input id="add" class="buttonStyle" type="submit" value="post" />
     </form>
   </div>
-  {{#if posts.length}}
-    {{#each posts}}
-      <div class="post">
-        <h4 id="title">{{title}}</h4>
-        <h5>{{success}}</h5>
-        <h5>{{struggle}}</h5>
-        <h5>{{content}}</h5>
-        <h5 id="signature">Alex</h5>
-
-        {{! edit & delete }}
-        <div class="editing">
-          <form action="/editPost/{{id}}" method="post">
-            <input id="edit" class="buttonStyle" type="submit" value="edit" />
-          </form>
-          <form action="/deletePost/{{id}}" method="post">
-            <input
-              id="delete"
-              class="buttonStyle"
-              type="submit"
-              value="delete"
-            />
-          </form>
-        </div>
-        {{! edit & delete }}
-      </div>
-    {{/each}}
-  {{else}}
-    <h4 id="noContent">nothing here</h4>
-  {{/if}}
 </div>

@@ -69,6 +69,8 @@ app.use(function (request, response, next) {
   next();
 });
 
+// home page
+
 app.get("/", function (request, response) {
   response.render("home.hbs");
 });
@@ -106,22 +108,35 @@ app.get("/", function (request, response) {
 //   });
 // });
 
+//posts page
+
 app.get("/posts", function (request, response) {
   const query = `SELECT * FROM posts`;
 
   db.all(query, function (error, posts) {
-    const query = `SELECT * FROM comments`;
-
-    db.all(query, function (error, comments) {
-      const model = {
-        posts,
-      };
-      response.render("posts.hbs", model);
-    });
+    const model = {
+      posts,
+    };
+    response.render("posts.hbs", model);
   });
 });
 
-app.post("/posts", function (request, response) {
+// chosen post page
+
+app.get("/posts/:id", function (request, response) {
+  const id = request.params.id;
+  const query = `SELECT * FROM posts WHERE id = ?`;
+  const values = [id];
+
+  db.get(query, values, function (error, post) {
+    const model = {
+      post,
+    };
+    response.render("post.hbs", model);
+  });
+});
+
+app.post("/posts/:id", function (request, response) {
   // const postID = posts.id;
   const comment = request.body.comment;
 
@@ -135,11 +150,17 @@ app.post("/posts", function (request, response) {
   });
 });
 
+//create page
+
 app.get("/create", function (request, response) {
-  const model = {
-    posts: data.posts,
-  };
-  response.render("create.hbs", model);
+  const query = `SELECT * FROM posts`;
+
+  db.all(query, function (error, posts) {
+    const model = {
+      posts,
+    };
+    response.render("create.hbs", model);
+  });
 });
 
 app.post("/create", function (request, response) {
@@ -157,40 +178,58 @@ app.post("/create", function (request, response) {
   });
 });
 
-app.get("/feedback", function (request, response) {
-  const model = {
-    feedback: data.feedback,
-  };
-  response.render("feedback.hbs", model);
+//edit button on create page
+
+app.get("/editPost/:id", function (request, response) {
+  const id = request.params.id;
 });
 
+//delete button oncreate page
+
+app.post("/deletePost/:id", function (request, response) {
+  const id = request.params.id;
+});
+
+//feedback page
+
+app.get("/feedback", function (request, response) {
+  const query = `SELECT * FROM feedback`;
+
+  db.all(query, function (error, feedback) {
+    const model = {
+      feedback,
+    };
+    response.render("feedback.hbs", model);
+  });
+});
+
+//contact page
+
 app.post("/contact", function (request, response) {
-  const feedbackName = request.body.feedbackName;
-  const feedbackEmail = request.body.feedbackEmail;
+  const name = request.body.feedbackName;
+  const email = request.body.feedbackEmail;
   const feedback = request.body.feedback;
 
-  const newFeedback = {
-    feedbackId: data.feedback.length + 1,
-    fName: feedbackName,
-    email: feedbackEmail,
-    feedback: feedback,
-  };
+  const query = `INSERT INTO feedback (name, email, feedback) VALUES(?, ?, ?)`;
 
-  data.feedback.unshift(newFeedback);
-  console.log(data.feedback);
-  response.redirect("/thankYou");
+  const values = [name, email, feedback];
+
+  db.run(query, values, function (error) {
+    response.redirect("/thankYou");
+  });
 });
 
 app.get("/contact", function (request, response) {
-  const model = {
-    contact: data.contact,
-  };
-  response.render("contact.hbs", model);
+  response.render("contact.hbs");
 });
+
+//thank you page
 
 app.get("/thankYou", function (request, response) {
   response.render("thankYou.hbs");
 });
+
+//about page
 
 app.get("/about", function (request, response) {
   const query = `SELECT * FROM comments`;
@@ -201,6 +240,8 @@ app.get("/about", function (request, response) {
     response.render("about.hbs", model);
   });
 });
+
+//log in page
 
 app.get("/logIn", function (request, response) {
   response.render("logIn.hbs");
