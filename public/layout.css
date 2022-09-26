@@ -36,7 +36,7 @@ footer {
   height: 2rem;
   margin-top: 20rem;
   padding-left: 2rem;
-  font-family: "Raleway";
+  font-family: "Barlow";
 }
 
 /* #afterLogIn {
@@ -59,6 +59,15 @@ footer {
   justify-content: center;
 }
 
+.homePost {
+  width: 50%;
+  border: 1px solid;
+  padding: 1rem;
+  font-family: "Raleway";
+  margin: 0 auto 3rem auto;
+  box-shadow: 10px 10px;
+}
+
 /* posts page */
 
 .post {
@@ -66,7 +75,7 @@ footer {
   border: 1px solid;
   padding: 1rem;
   font-family: "Raleway";
-  margin: 0 auto 3rem auto;
+  margin: 0 auto 1rem auto;
   box-shadow: 10px 10px;
 }
 
@@ -79,7 +88,19 @@ footer {
 }
 
 .comment {
-  background-color: aquamarine;
+  margin-bottom: 1rem;
+  background-color: aliceblue;
+}
+
+.addComment {
+  display: flex;
+  margin-bottom: 3rem;
+  padding-left: 25%;
+  font-family: "Barlow";
+}
+
+#addCommentButton {
+  border: 1px solid;
 }
 
 #existingComments {

@@ -75,39 +75,6 @@ app.get("/", function (request, response) {
   response.render("home.hbs");
 });
 
-// app.get("/posts", function (request, response) {
-//   const query = `SELECT * FROM posts`;
-
-//   db.all(query, function (error, posts) {
-//     const query = `SELECT * FROM comments`;
-
-//     db.all(query, function (error, comments) {
-//       for (const post of posts) {
-//         post.comments = comments.filter((c) => c.postID == post.id);
-//       }
-
-//       const model = {
-//         posts,
-//       };
-//       response.render("posts.hbs", model);
-//     });
-//   });
-// });
-
-// app.post("/posts/:id", function (request, response) {
-//   // const postID = posts.id;
-//   const comment = request.body.comment;
-
-//   const query = `INSERT INTO comments (postID, comment) VALUES(?, ?)`;
-
-//   const values = [postID, comment];
-
-//   db.run(query, values, function (error) {
-//     response.redirect("/about");
-//     console.log("new comment added");
-//   });
-// });
-
 //posts page
 
 app.get("/posts", function (request, response) {
@@ -125,27 +92,32 @@ app.get("/posts", function (request, response) {
 
 app.get("/posts/:id", function (request, response) {
   const id = request.params.id;
-  const query = `SELECT * FROM posts WHERE id = ?`;
+  const queryPosts = `SELECT * FROM posts WHERE id = ?`;
+  const queryComments = `SELECT * FROM comments WHERE postID = ?`;
   const values = [id];
 
-  db.get(query, values, function (error, post) {
-    const model = {
-      post,
-    };
-    response.render("post.hbs", model);
+  db.get(queryPosts, values, function (error, post) {
+    db.all(queryComments, values, function (error, comments) {
+      const model = {
+        post,
+        comments,
+      };
+      response.render("post.hbs", model);
+      console.log(model);
+    });
   });
 });
 
 app.post("/posts/:id", function (request, response) {
-  // const postID = posts.id;
+  const postID = request.params.id;
   const comment = request.body.comment;
 
-  const query = `INSERT INTO comments (comment) VALUES(?)`;
+  const queryComments = `INSERT INTO comments (comment, postID) VALUES(?, ?)`;
 
-  const values = [comment];
+  const values = [comment, postID];
 
-  db.run(query, values, function (error) {
-    response.redirect("/about");
+  db.run(queryComments, values, function (error) {
+    response.redirect("/posts/" + postID);
     console.log("new comment added");
   });
 });
