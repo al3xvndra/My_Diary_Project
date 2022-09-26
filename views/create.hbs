@@ -2,7 +2,7 @@
   <div class="header">
     <h1>all posts</h1>
   </div>
-  <div class="post">
+  <div class="homePost">
     <form action="" method="post">
       <div class="input-group">
         <span class="input-group-addon"><i
@@ -58,7 +58,7 @@
   </div>
   {{#if posts.length}}
     {{#each posts}}
-      <div class="post">
+      <div class="homePost">
         <h4 id="title">{{title}}</h4>
         <h5>{{success}}</h5>
         <h5>{{struggle}}</h5>
@@ -67,7 +67,7 @@
 
         {{! edit & delete }}
         <div class="editing">
-          <form action="/editPost/{{id}}" method="post">
+          <form action="/editPost/{{id}}" method="get">
             <input id="edit" class="buttonStyle" type="submit" value="edit" />
           </form>
           <form action="/deletePost/{{id}}" method="post">

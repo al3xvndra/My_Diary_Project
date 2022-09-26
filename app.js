@@ -154,12 +154,44 @@ app.post("/create", function (request, response) {
 
 app.get("/editPost/:id", function (request, response) {
   const id = request.params.id;
+  const queryPosts = `SELECT * FROM posts WHERE id = ?`;
+  const values = [id];
+
+  db.get(queryPosts, values, function (error, post) {
+    const model = {
+      post,
+      id,
+    };
+    response.render("edit.hbs", model);
+  });
+});
+
+app.post("/editPost/:id", function (request, response) {
+  const id = request.params.id;
+  const title = request.body.postTitle;
+  const success = request.body.postSuccess;
+  const struggle = request.body.postStruggle;
+  const content = request.body.postContent;
+
+  const values = [title, success, struggle, content, id];
+  const query = `UPDATE posts
+  SET title = ?, success = ?, struggle = ?, content = ? WHERE id = ?;`;
+
+  db.run(query, values, function (error) {
+    response.redirect("/create");
+  });
 });
 
 //delete button oncreate page
 
 app.post("/deletePost/:id", function (request, response) {
   const id = request.params.id;
+  const values = [id];
+  const query = `DELETE FROM posts WHERE id = ?;`;
+
+  db.run(query, values, function (error) {
+    response.redirect("/create");
+  });
 });
 
 //feedback page
