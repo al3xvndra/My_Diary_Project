@@ -1,0 +1,53 @@
+<div id="mainPosts">
+  <div class="header">
+    <h1>edit feedback</h1>
+  </div>
+
+  <div id="logInWindow">
+    <form action="/editFeedback/{{id}}" method="post">
+      <div class="input-group">
+        <span class="input-group-addon"><i
+            class="glyphicon glyphicon-user"
+          ></i></span>
+        <input
+          id="feedbackName"
+          type="text"
+          class="form-control"
+          name="feedbackName"
+          placeholder=" first name"
+        />
+      </div>
+      <div class="input-group">
+        <span class="input-group-addon"><i
+            class="glyphicon glyphicon-user"
+          ></i></span>
+        <input
+          id="feedbackEmail"
+          type="email"
+          class="form-control"
+          name="feedbackEmail"
+          placeholder=" email"
+        />
+      </div>
+      <div class="input-group">
+        <span class="input-group-addon"><i
+            class="glyphicon glyphicon-lock"
+          ></i></span>
+        <input
+          id="feedback"
+          type="text"
+          class="form-control"
+          name="feedback"
+          placeholder=" message..."
+        />
+      </div>
+      <input
+        id="submitButton"
+        class="btn btn-outline-dark"
+        type="submit"
+        value="submit"
+      />
+    </form>
+  </div>
+
+</div>

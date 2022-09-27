@@ -39,10 +39,6 @@ footer {
   font-family: "Barlow";
 }
 
-/* #afterLogIn {
-  display: none;
-} */
-
 /* home page */
 
 .header {
@@ -81,7 +77,6 @@ footer {
 
 .commentsSection {
   width: 50%;
-  border: 1px solid;
   padding: 1rem;
   font-family: "Raleway";
   margin: 0 auto 1rem auto;
@@ -113,8 +108,17 @@ footer {
   justify-content: center;
 }
 
-#title {
+.title {
   font-weight: 700;
+}
+
+.struggle {
+  margin-bottom: 2rem;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
 }
 
 #signature {
@@ -204,3 +208,7 @@ form {
 .form-control {
   margin-bottom: 0.5rem;
 }
+
+/* icons
+<a target="_blank" href="https://icons8.com/icon/63111/facebook-like">Facebook Like icon by Icons8</a>
+*/

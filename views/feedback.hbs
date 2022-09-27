@@ -4,10 +4,25 @@
   </div>
   {{#if feedback.length}}
     {{#each feedback}}
-      <div class="post">
+      <div class="homePost">
         <h4 id="title">{{email}}</h4>
         <h5>{{feedback}}</h5>
-        <h5 id="signature">{{fName}}</h5>
+        <h5 id="signature">{{name}}</h5>
+        {{! edit & delete }}
+        <div class="editing">
+          <form action="/editFeedback/{{id}}" method="get">
+            <input id="edit" class="buttonStyle" type="submit" value="edit" />
+          </form>
+          <form action="/deleteFeedback/{{id}}" method="post">
+            <input
+              id="delete"
+              class="buttonStyle"
+              type="submit"
+              value="delete"
+            />
+          </form>
+        </div>
+        {{! edit & delete }}
       </div>
     {{/each}}
   {{else}}

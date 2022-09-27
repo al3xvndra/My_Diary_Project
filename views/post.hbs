@@ -3,11 +3,20 @@
     <a href="/posts" id="goBack">go back</a>
     <h1>comment below!</h1>
   </div>
+
   {{#if post}}
     <div class="post">
-      <h4 id="title">{{post.title}}</h4>
-      <h5>{{post.success}}</h5>
-      <h5>{{post.struggle}}</h5>
+      <h4 class="title">{{post.title}}</h4>
+      <h5 class="success"><img
+          class="icon"
+          src="https://img.icons8.com/wired/100/000000/thumb-up.png"
+        />
+        {{post.success}}</h5>
+      <h5 class="struggle"><img
+          class="icon"
+          src="https://img.icons8.com/wired/100/000000/thumbs-down.png"
+        />
+        {{post.struggle}}</h5>
       <h5>{{post.content}}</h5>
       <h5 id="signature">Alex</h5>
     </div>
@@ -34,11 +43,34 @@
         />
       </form>
     </div>
+
     <div class="commentsSection" id="existingComments">
       {{#if comments.length}}
         {{#each comments}}
           <div class="comment">
             <h5>{{comment}}</h5>
+            {{#if session.isLoggedIn}}
+              {{! edit & delete }}
+              <div class="editing">
+                <form action="/editComment/{{id}}" method="get">
+                  <input
+                    id="edit"
+                    class="buttonStyle"
+                    type="submit"
+                    value="edit"
+                  />
+                </form>
+                <form action="/deleteComment/{{id}}" method="post">
+                  <input
+                    id="delete"
+                    class="buttonStyle"
+                    type="submit"
+                    value="delete"
+                  />
+                </form>
+              </div>
+              {{! edit & delete }}
+            {{/if}}
           </div>
         {{/each}}
       {{else}}
