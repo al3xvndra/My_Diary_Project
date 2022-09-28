@@ -414,4 +414,16 @@ app.post("/logIn", function (request, response) {
   }
 });
 
+//log out page
+
+app.get("/logOut", function (request, response) {
+  request.session.isLoggedIn = false;
+  response.render("home.hbs");
+});
+
+app.post("/logOut", function (request, response) {
+  request.session.isLoggedIn = false;
+  response.redirect("/");
+});
+
 app.listen(8080);
