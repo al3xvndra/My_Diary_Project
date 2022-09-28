@@ -3,7 +3,12 @@
     <a href="/posts" id="goBack">go back</a>
     <h1>comment below!</h1>
   </div>
-
+{{#if errorMessages.length}}
+<p>Could not create a comment, because:</p>
+{{#each errorMessages}}
+<p>{{this}}</p>
+{{/each}}
+{{/if}}
   {{#if post}}
     <div class="post">
       <h4 class="title">{{post.title}}</h4>
@@ -60,7 +65,7 @@
                     value="edit"
                   />
                 </form>
-                <form action="/deleteComment/{{id}}" method="post">
+                <form action="/deleteComment/{{id}}/{{postID}}" method="post">
                   <input
                     id="delete"
                     class="buttonStyle"

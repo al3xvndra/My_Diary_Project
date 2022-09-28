@@ -1,4 +1,3 @@
-const data = require("./data");
 const express = require("express");
 const expressHandlebars = require("express-handlebars");
 const bodyParser = require("body-parser");
@@ -81,7 +80,14 @@ app.get("/posts", function (request, response) {
   const query = `SELECT * FROM posts`;
 
   db.all(query, function (error, posts) {
+    const errorMessages = [];
+
+    if (error) {
+      errorMessages.push("Internal server error");
+    }
+
     const model = {
+      errorMessages,
       posts,
     };
     response.render("posts.hbs", model);
@@ -99,6 +105,7 @@ app.get("/posts/:id", function (request, response) {
   db.get(queryPosts, values, function (error, post) {
     db.all(queryComments, values, function (error, comments) {
       const model = {
+        errorMessages: [],
         post,
         comments,
       };
@@ -107,18 +114,51 @@ app.get("/posts/:id", function (request, response) {
   });
 });
 
+function getErrorMessagesForComments(comment) {
+  const errorMessages = [];
+
+  if (comment.length == 0) {
+    errorMessages.push("The comment field can't be empty.");
+  }
+
+  return errorMessages;
+}
+
 app.post("/posts/:id", function (request, response) {
   const postID = request.params.id;
   const comment = request.body.comment;
 
-  const queryComments = `INSERT INTO comments (comment, postID) VALUES(?, ?)`;
+  const errorMessages = getErrorMessagesForComments(comment);
 
-  const values = [comment, postID];
+  if (comment.length == 0) {
+    errorMessages.push("The comment field can't be empty.");
+  }
 
-  db.run(queryComments, values, function (error) {
-    response.redirect("/posts/" + postID);
-    console.log("new comment added");
-  });
+  if (errorMessages.length == 0) {
+    const queryComments = `INSERT INTO comments (comment, postID) VALUES(?, ?)`;
+
+    const values = [comment, postID];
+
+    db.run(queryComments, values, function (error) {
+      response.redirect("/posts/" + postID);
+      console.log("new comment added");
+    });
+  } else {
+    const queryPosts = `SELECT * FROM posts WHERE id = ?`;
+    const queryComments = `SELECT * FROM comments WHERE postID = ?`;
+    const values = [postID];
+
+    db.get(queryPosts, values, function (error, post) {
+      db.all(queryComments, values, function (error, comments) {
+        const model = {
+          errorMessages,
+          post,
+          comments,
+        };
+        response.render("post.hbs", model);
+      });
+    });
+  }
 });
 
 //create page
@@ -215,26 +255,47 @@ app.post("/editComment/:id/:postID", function (request, response) {
   const id = request.params.id;
   const postID = request.params.postID;
   const comment = request.body.comment;
-
   const values = [comment, id];
-  const query = `UPDATE comments
+
+  const errorMessages = getErrorMessagesForComments(comment);
+
+  if (errorMessages.length == 0) {
+    const query = `UPDATE comments
   SET comment = ? WHERE id = ?;`;
 
-  db.run(query, values, function (error) {
-    console.log(error);
-    response.redirect("/posts/" + postID);
-  });
+    db.run(query, values, function (error) {
+      if (error) {
+        console.log(error);
+      } else {
+        response.redirect("/posts/" + postID);
+      }
+    });
+  } else {
+    const queryPosts = `SELECT * FROM comments WHERE id = ?`;
+    const values = [id];
+
+    db.get(queryPosts, values, function (error, comment) {
+      const model = {
+        comment,
+        id,
+        errorMessages,
+      };
+      response.render("editComment.hbs", model);
+    });
+  }
 });
 
 //delete comment
 
-app.post("/deleteComment/:id", function (request, response) {
+app.post("/deleteComment/:id/:postID", function (request, response) {
   const id = request.params.id;
+  const postID = request.params.postID;
   const values = [id];
   const query = `DELETE FROM comments WHERE id = ?;`;
 
   db.run(query, values, function (error) {
-    response.redirect("/posts");
+    console.log(error);
+    response.redirect("/posts/" + postID);
   });
 });
 

@@ -2,6 +2,12 @@
   <div class="header">
     <h1>edit comment</h1>
   </div>
+  {{#if errorMessages.length}}
+    <p>Could not create a comment, because:</p>
+    {{#each errorMessages}}
+      <p>{{this}}</p>
+    {{/each}}
+  {{/if}}
   <div class="commentsSection">
     <form
       action="/editComment/{{id}}/{{comment.postID}}"
