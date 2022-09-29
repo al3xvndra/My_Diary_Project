@@ -7,6 +7,8 @@ const expressSession = require("express-session");
 const adminUsername = "alex";
 const adminPassword = "me";
 
+db.run(`PRAGMA foreign_keys = ON`);
+
 db.run(
   `CREATE TABLE IF NOT EXISTS posts(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
