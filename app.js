@@ -245,6 +245,11 @@ app.get("/editPost/:id", function (request, response) {
   const values = [id];
 
   db.get(queryPosts, values, function (error, post) {
+    const errorMessages = [];
+
+    if (error) {
+      errorMessages.push("Internal server error");
+    }
     const model = {
       post,
       id,
@@ -314,6 +319,11 @@ app.get("/editComment/:id", function (request, response) {
   const values = [id];
 
   db.get(queryPosts, values, function (error, comment) {
+    const errorMessages = [];
+
+    if (error) {
+      errorMessages.push("Internal server error");
+    }
     const model = {
       comment,
       id,
@@ -379,6 +389,11 @@ app.get("/editFeedback/:id", function (request, response) {
   const values = [id];
 
   db.get(queryPosts, values, function (error, oneFeedback) {
+    const errorMessages = [];
+
+    if (error) {
+      errorMessages.push("Internal server error");
+    }
     const model = {
       oneFeedback,
       id,
@@ -495,13 +510,7 @@ app.get("/thankYou", function (request, response) {
 //about page
 
 app.get("/about", function (request, response) {
-  const query = `SELECT * FROM comments`;
-  db.all(query, function (error, comments) {
-    const model = {
-      comments,
-    };
-    response.render("about.hbs", model);
-  });
+  response.render("about.hbs");
 });
 
 //log in page
