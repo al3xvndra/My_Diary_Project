@@ -18,10 +18,34 @@
           {{struggle}}</h5>
         <h5>{{content}}</h5>
         <h5 id="signature">Alex</h5>
+
+
+{{#if ../session.isLoggedIn}}
+        <div class="editing">
+          <form action="/editPost/{{id}}" method="get">
+            <input
+              id="edit"
+              class="btn btn-outline-warning"
+              type="submit"
+              value="edit"
+            />
+          </form>
+          <form action="/deletePost/{{id}}" method="post">
+            <input
+              id="delete"
+              class="btn btn-outline-danger"
+              type="submit"
+              value="delete"
+            />
+          </form>
+        </div>
+{{/if}}
+
       </div>
 
       <div class="addComment">
-        <a href="posts/{{id}}" id="addCommentButton">Add a comment here</a>
+        <a href="posts/{{id}}" class="btn btn-outline-dark" id="buttonAdd">add a
+          comment here</a>
       </div>
     {{/each}}
   {{else}}

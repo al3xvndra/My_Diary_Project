@@ -3,6 +3,13 @@
     <h1>edit post</h1>
   </div>
   <div class="post">
+    {{#if errorMessages.length}}
+      {{#each errorMessages}}
+        <div class="alert alert-danger" role="alert">
+          {{this}}
+        </div>
+      {{/each}}
+    {{/if}}
     <form action="/editPost/{{id}}" method="post">
       <div class="input-group">
         <span class="input-group-addon"><i
@@ -53,7 +60,12 @@
         />
       </div>
       <h5 id="signature">Alex</h5>
-      <input id="add" class="buttonStyle" type="submit" value="post" />
+      <input
+        id="submitButton"
+        class="btn btn-outline-dark"
+        type="submit"
+        value="submit"
+      />
     </form>
   </div>
 </div>

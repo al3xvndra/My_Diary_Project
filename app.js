@@ -68,6 +68,51 @@ app.use(function (request, response, next) {
   next();
 });
 
+//all error handling functions
+
+function getErrorMessagesForComments(comment) {
+  const errorMessages = [];
+
+  if (comment.length == 0) {
+    errorMessages.push("The comment field can't be empty.");
+  }
+
+  return errorMessages;
+}
+
+function getErrorMessagesForPosts(title, success, struggle, content) {
+  const errorMessages = [];
+
+  if (title.length == 0) {
+    errorMessages.push("The title field can't be empty.");
+  }
+  if (success.length == 0) {
+    errorMessages.push("The success field can't be empty.");
+  }
+  if (struggle.length == 0) {
+    errorMessages.push("The struggle field can't be empty.");
+  }
+  if (content.length == 0) {
+    errorMessages.push("The content field can't be empty.");
+  }
+  return errorMessages;
+}
+
+function getErrorMessagesForFeedback(name, email, feedback) {
+  const errorMessages = [];
+
+  if (name.length == 0) {
+    errorMessages.push("The name field can't be empty.");
+  }
+  if (email.length == 0) {
+    errorMessages.push("The email field can't be empty.");
+  }
+  if (feedback.length == 0) {
+    errorMessages.push("The feedback field can't be empty.");
+  }
+  return errorMessages;
+}
+
 // home page
 
 app.get("/", function (request, response) {
@@ -104,8 +149,12 @@ app.get("/posts/:id", function (request, response) {
 
   db.get(queryPosts, values, function (error, post) {
     db.all(queryComments, values, function (error, comments) {
+      const errorMessages = [];
+      if (error) {
+        errorMessages.push("Internal server error");
+      }
       const model = {
-        errorMessages: [],
+        errorMessages,
         post,
         comments,
       };
@@ -114,25 +163,11 @@ app.get("/posts/:id", function (request, response) {
   });
 });
 
-function getErrorMessagesForComments(comment) {
-  const errorMessages = [];
-
-  if (comment.length == 0) {
-    errorMessages.push("The comment field can't be empty.");
-  }
-
-  return errorMessages;
-}
-
 app.post("/posts/:id", function (request, response) {
   const postID = request.params.id;
   const comment = request.body.comment;
 
   const errorMessages = getErrorMessagesForComments(comment);
-
-  if (comment.length == 0) {
-    errorMessages.push("The comment field can't be empty.");
-  }
 
   if (errorMessages.length == 0) {
     const queryComments = `INSERT INTO comments (comment, postID) VALUES(?, ?)`;
@@ -164,14 +199,7 @@ app.post("/posts/:id", function (request, response) {
 //create page
 
 app.get("/create", function (request, response) {
-  const query = `SELECT * FROM posts`;
-
-  db.all(query, function (error, posts) {
-    const model = {
-      posts,
-    };
-    response.render("create.hbs", model);
-  });
+  response.render("create.hbs");
 });
 
 app.post("/create", function (request, response) {
@@ -180,13 +208,32 @@ app.post("/create", function (request, response) {
   const struggle = request.body.postStruggle;
   const content = request.body.postContent;
 
-  const query = `INSERT INTO posts (title, success, struggle, content) VALUES(?, ?, ?, ?)`;
+  const errorMessages = getErrorMessagesForPosts(
+    title,
+    success,
+    struggle,
+    content
+  );
 
-  const values = [title, success, struggle, content];
+  if (errorMessages.length == 0) {
+    const query = `INSERT INTO posts (title, success, struggle, content) VALUES(?, ?, ?, ?)`;
 
-  db.run(query, values, function (error) {
-    response.redirect("/posts");
-  });
+    const values = [title, success, struggle, content];
+
+    db.run(query, values, function (error) {
+      response.redirect("/posts");
+    });
+  } else {
+    const query = `SELECT * FROM posts`;
+
+    db.all(query, function (error, posts) {
+      const model = {
+        errorMessages,
+        posts,
+      };
+      response.render("create.hbs", model);
+    });
+  }
 });
 
 // editing & deleting section
@@ -212,14 +259,39 @@ app.post("/editPost/:id", function (request, response) {
   const success = request.body.postSuccess;
   const struggle = request.body.postStruggle;
   const content = request.body.postContent;
-
   const values = [title, success, struggle, content, id];
-  const query = `UPDATE posts
+
+  const errorMessages = getErrorMessagesForPosts(
+    title,
+    success,
+    struggle,
+    content
+  );
+
+  if (errorMessages.length == 0) {
+    const query = `UPDATE posts
   SET title = ?, success = ?, struggle = ?, content = ? WHERE id = ?;`;
 
-  db.run(query, values, function (error) {
-    response.redirect("/create");
-  });
+    db.run(query, values, function (error) {
+      if (error) {
+        console.log(error);
+      } else {
+        response.redirect("/posts");
+      }
+    });
+  } else {
+    const queryPosts = `SELECT * FROM posts WHERE id = ?`;
+    const values = [id];
+
+    db.get(queryPosts, values, function (error, post) {
+      const model = {
+        post,
+        id,
+        errorMessages,
+      };
+      response.render("editPost.hbs", model);
+    });
+  }
 });
 
 //delete post
@@ -230,7 +302,7 @@ app.post("/deletePost/:id", function (request, response) {
   const query = `DELETE FROM posts WHERE id = ?;`;
 
   db.run(query, values, function (error) {
-    response.redirect("/create");
+    response.redirect("/posts");
   });
 });
 
@@ -320,14 +392,34 @@ app.post("/editFeedback/:id", function (request, response) {
   const name = request.body.feedbackName;
   const email = request.body.feedbackEmail;
   const feedback = request.body.feedback;
-
   const values = [name, email, feedback, id];
-  const query = `UPDATE feedback
+
+  const errorMessages = getErrorMessagesForFeedback(name, email, feedback);
+
+  if (errorMessages.length == 0) {
+    const query = `UPDATE feedback
   SET name = ?, email = ?, feedback = ? WHERE id = ?;`;
 
-  db.run(query, values, function (error) {
-    response.redirect("/feedback");
-  });
+    db.run(query, values, function (error) {
+      if (error) {
+        console.log(error);
+      } else {
+        response.redirect("/feedback");
+      }
+    });
+  } else {
+    const queryPosts = `SELECT * FROM feedback WHERE id = ?`;
+    const values = [id];
+
+    db.get(queryPosts, values, function (error, oneFeedback) {
+      const model = {
+        oneFeedback,
+        id,
+        errorMessages,
+      };
+      response.render("editFeedback.hbs", model);
+    });
+  }
 });
 
 //delete feedback
@@ -348,6 +440,11 @@ app.get("/feedback", function (request, response) {
   const query = `SELECT * FROM feedback`;
 
   db.all(query, function (error, feedback) {
+    const errorMessages = [];
+
+    if (error) {
+      errorMessages.push("Internal server error");
+    }
     const model = {
       feedback,
     };
@@ -362,13 +459,27 @@ app.post("/contact", function (request, response) {
   const email = request.body.feedbackEmail;
   const feedback = request.body.feedback;
 
-  const query = `INSERT INTO feedback (name, email, feedback) VALUES(?, ?, ?)`;
+  const errorMessages = getErrorMessagesForFeedback(name, email, feedback);
 
-  const values = [name, email, feedback];
+  if (errorMessages.length == 0) {
+    const query = `INSERT INTO feedback (name, email, feedback) VALUES(?, ?, ?)`;
 
-  db.run(query, values, function (error) {
-    response.redirect("/thankYou");
-  });
+    const values = [name, email, feedback];
+
+    db.run(query, values, function (error) {
+      response.redirect("/thankYou");
+    });
+  } else {
+    const query = `SELECT * FROM feedback`;
+
+    db.all(query, function (error, feedback) {
+      const model = {
+        feedback,
+        errorMessages,
+      };
+      response.render("contact.hbs", model);
+    });
+  }
 });
 
 app.get("/contact", function (request, response) {

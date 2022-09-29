@@ -3,12 +3,6 @@
     <a href="/posts" id="goBack">go back</a>
     <h1>comment below!</h1>
   </div>
-{{#if errorMessages.length}}
-<p>Could not create a comment, because:</p>
-{{#each errorMessages}}
-<p>{{this}}</p>
-{{/each}}
-{{/if}}
   {{#if post}}
     <div class="post">
       <h4 class="title">{{post.title}}</h4>
@@ -32,13 +26,22 @@
           <span class="input-group-addon"><i
               class="glyphicon glyphicon-lock"
             ></i></span>
-          <input
-            id="comment"
-            type="text"
-            class="form-control"
-            name="comment"
-            placeholder=" comment here..."
-          />
+          <div class="newComment">
+            {{#if errorMessages.length}}
+              {{#each errorMessages}}
+                <div class="alert alert-danger" role="alert">
+                  {{this}}
+                </div>
+              {{/each}}
+            {{/if}}
+            <input
+              id="comment"
+              type="text"
+              class="form-control"
+              name="comment"
+              placeholder=" comment here..."
+            />
+          </div>
         </div>
         <input
           id="submitButton"
@@ -60,7 +63,7 @@
                 <form action="/editComment/{{id}}" method="get">
                   <input
                     id="edit"
-                    class="buttonStyle"
+                    class="btn btn-outline-warning"
                     type="submit"
                     value="edit"
                   />
@@ -68,7 +71,7 @@
                 <form action="/deleteComment/{{id}}/{{postID}}" method="post">
                   <input
                     id="delete"
-                    class="buttonStyle"
+                    class="btn btn-outline-danger"
                     type="submit"
                     value="delete"
                   />

@@ -4,6 +4,13 @@
   </div>
 
   <div id="logInWindow">
+    {{#if errorMessages.length}}
+      {{#each errorMessages}}
+        <div class="alert alert-danger" role="alert">
+          {{this}}
+        </div>
+      {{/each}}
+    {{/if}}
     <form action="/editFeedback/{{id}}" method="post">
       <div class="input-group">
         <span class="input-group-addon"><i
