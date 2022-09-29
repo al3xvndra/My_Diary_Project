@@ -4,6 +4,13 @@
     <h1>log in</h1>
   </div>
   <div id="logInWindow">
+    {{#if errorMessages.length}}
+      {{#each errorMessages}}
+        <div class="alert alert-danger" role="alert">
+          {{this}}
+        </div>
+      {{/each}}
+    {{/if}}
     <form action="/logIn" method="POST">
       <div class="input-group">
         <span class="input-group-addon"><i
@@ -29,8 +36,12 @@
           placeholder=" password"
         />
       </div>
-      <input id="submitButton" class="btn btn-outline-dark" type="submit" value="submit">
-      </form>
-    </div>
+      <input
+        id="submitButton"
+        class="btn btn-outline-dark"
+        type="submit"
+        value="submit"
+      />
+    </form>
   </div>
 </div>

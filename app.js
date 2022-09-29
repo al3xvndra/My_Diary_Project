@@ -115,6 +115,23 @@ function getErrorMessagesForFeedback(name, email, feedback) {
   return errorMessages;
 }
 
+function getErrorMessagesForLogIn(
+  enteredUsername,
+  enteredPassword,
+  adminUsername,
+  adminPassword
+) {
+  const errorMessages = [];
+
+  if (enteredUsername !== adminUsername) {
+    errorMessages.push("Wrong username or parssword");
+  }
+  if (enteredPassword !== adminPassword) {
+    errorMessages.push("Wrong username or parssword");
+  }
+  return errorMessages;
+}
+
 // home page
 
 app.get("/", function (request, response) {
@@ -178,7 +195,6 @@ app.post("/posts/:id", function (request, response) {
 
     db.run(queryComments, values, function (error) {
       response.redirect("/posts/" + postID);
-      console.log("new comment added");
     });
   } else {
     const queryPosts = `SELECT * FROM posts WHERE id = ?`;
@@ -330,7 +346,6 @@ app.get("/editComment/:id", function (request, response) {
       comment,
       id,
     };
-    console.log(model);
     response.render("editComment.hbs", model);
   });
 });
@@ -522,18 +537,33 @@ app.get("/logIn", function (request, response) {
 });
 
 app.post("/logIn", function (request, response) {
-  const username = request.body.username;
-  const password = request.body.password;
+  const enteredUsername = request.body.username;
+  const enteredPassword = request.body.password;
 
-  if (username == adminUsername && password == adminPassword) {
+  const errorMessages = getErrorMessagesForLogIn(
+    enteredUsername,
+    enteredPassword,
+    adminUsername,
+    adminPassword
+  );
+  if (errorMessages.length == 0) {
     request.session.isLoggedIn = true;
     response.redirect("/");
   } else {
     const model = {
-      failedToLogIn: true,
+      errorMessages,
     };
     response.render("logIn.hbs", model);
   }
+
+  // if (enteredUsername == adminUsername && enteredPassword == adminPassword) {
+  //   request.session.isLoggedIn = true;
+  //   response.redirect("/");
+  // } else {
+  //   const model = {
+  //     failedToLogIn: true,
+  //   };
+  //   response.render("logIn.hbs", model);
 });
 
 //log out page
