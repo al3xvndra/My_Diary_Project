@@ -61,6 +61,20 @@ p {
   font-weight: 700;
 }
 
+#logOut {
+  text-decoration: none !important;
+  color: black !important;
+  padding: 15% 30% 15% 30%;
+  letter-spacing: 0.095em;
+  border: none;
+  background-color: #ffffff;
+}
+
+#logOut:hover {
+  background-color: rgb(240, 240, 240);
+  border-radius: 5px;
+}
+
 /* home page */
 
 .header {

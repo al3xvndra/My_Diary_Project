@@ -24,7 +24,9 @@
       {{#if session.isLoggedIn}}
         <a href="/create" id="afterLogIn">create</a>
         <a href="/feedback" id="afterLogIn">feedback</a>
-        <a href="/logOut">log out</a>
+        <form action="/logOut" method="post">
+          <input id="logOut" type="submit" value="LOG OUT" />
+        </form>
       {{/if}}
       {{#unless session.isLoggedIn}}
         <a href="/logIn">log in</a>

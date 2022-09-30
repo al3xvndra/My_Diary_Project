@@ -141,7 +141,7 @@ app.get("/", function (request, response) {
 //posts page
 
 app.get("/posts", function (request, response) {
-  const query = `SELECT * FROM posts`;
+  const query = `SELECT * FROM posts ORDER BY id DESC`;
 
   db.all(query, function (error, posts) {
     const errorMessages = [];
@@ -217,7 +217,11 @@ app.post("/posts/:id", function (request, response) {
 //create page
 
 app.get("/create", function (request, response) {
-  response.render("create.hbs");
+  if (request.session.isLoggedIn) {
+    response.render("create.hbs");
+  } else {
+    response.redirect("/logIn");
+  }
 });
 
 app.post("/create", function (request, response) {
@@ -272,7 +276,12 @@ app.get("/editPost/:id", function (request, response) {
       post,
       id,
     };
-    response.render("editPost.hbs", model);
+
+    if (request.session.isLoggedIn) {
+      response.render("editPost.hbs", model);
+    } else {
+      response.redirect("/logIn");
+    }
   });
 });
 
@@ -346,7 +355,12 @@ app.get("/editComment/:id", function (request, response) {
       comment,
       id,
     };
-    response.render("editComment.hbs", model);
+
+    if (request.session.isLoggedIn) {
+      response.render("editComment.hbs", model);
+    } else {
+      response.redirect("/logIn");
+    }
   });
 });
 
@@ -415,7 +429,12 @@ app.get("/editFeedback/:id", function (request, response) {
       oneFeedback,
       id,
     };
-    response.render("editFeedback.hbs", model);
+
+    if (request.session.isLoggedIn) {
+      response.render("editFeedback.hbs", model);
+    } else {
+      response.redirect("/logIn");
+    }
   });
 });
 
@@ -480,7 +499,12 @@ app.get("/feedback", function (request, response) {
     const model = {
       feedback,
     };
-    response.render("feedback.hbs", model);
+
+    if (request.session.isLoggedIn) {
+      response.render("feedback.hbs", model);
+    } else {
+      response.redirect("/logIn");
+    }
   });
 });
 
@@ -555,24 +579,9 @@ app.post("/logIn", function (request, response) {
     };
     response.render("logIn.hbs", model);
   }
-
-  // if (enteredUsername == adminUsername && enteredPassword == adminPassword) {
-  //   request.session.isLoggedIn = true;
-  //   response.redirect("/");
-  // } else {
-  //   const model = {
-  //     failedToLogIn: true,
-  //   };
-  //   response.render("logIn.hbs", model);
 });
 
 //log out page
-
-app.get("/logOut", function (request, response) {
-  request.session.isLoggedIn = false;
-  response.render("home.hbs");
-});
-
 app.post("/logOut", function (request, response) {
   request.session.isLoggedIn = false;
   response.redirect("/");
