@@ -82,9 +82,11 @@ function getErrorMessagesForComments(comment) {
   return errorMessages;
 }
 
-function getErrorMessagesForPosts(title, success, struggle, content) {
+function getErrorMessagesForPosts(date, title, success, struggle, content) {
   const errorMessages = [];
-
+  if (date.length == 0) {
+    errorMessages.push("The date field can't be empty.");
+  }
   if (title.length == 0) {
     errorMessages.push("The title field can't be empty.");
   }
@@ -225,22 +227,29 @@ app.get("/create", function (request, response) {
 });
 
 app.post("/create", function (request, response) {
+  const date = request.body.postDate;
   const title = request.body.postTitle;
   const success = request.body.postSuccess;
   const struggle = request.body.postStruggle;
   const content = request.body.postContent;
 
   const errorMessages = getErrorMessagesForPosts(
+    date,
     title,
     success,
     struggle,
     content
   );
 
-  if (errorMessages.length == 0) {
-    const query = `INSERT INTO posts (title, success, struggle, content) VALUES(?, ?, ?, ?)`;
+  if (!request.session.isLoggedIn) {
+    errorMessages.push("You have to log in");
+  }
 
-    const values = [title, success, struggle, content];
+  if (errorMessages.length == 0) {
+    console.log(date);
+    const query = `INSERT INTO posts (date, title, success, struggle, content) VALUES(?, ?, ?, ?, ?)`;
+
+    const values = [date, title, success, struggle, content];
 
     db.run(query, values, function (error) {
       response.redirect("/posts");
@@ -287,22 +296,28 @@ app.get("/editPost/:id", function (request, response) {
 
 app.post("/editPost/:id", function (request, response) {
   const id = request.params.id;
+  const date = request.body.postDate;
   const title = request.body.postTitle;
   const success = request.body.postSuccess;
   const struggle = request.body.postStruggle;
   const content = request.body.postContent;
-  const values = [title, success, struggle, content, id];
+  const values = [date, title, success, struggle, content, id];
 
   const errorMessages = getErrorMessagesForPosts(
+    date,
     title,
     success,
     struggle,
     content
   );
 
+  if (!request.session.isLoggedIn) {
+    errorMessages.push("You have to log in");
+  }
+
   if (errorMessages.length == 0) {
     const query = `UPDATE posts
-  SET title = ?, success = ?, struggle = ?, content = ? WHERE id = ?;`;
+  SET date = ?, title = ?, success = ?, struggle = ?, content = ? WHERE id = ?;`;
 
     db.run(query, values, function (error) {
       if (error) {
@@ -331,6 +346,10 @@ app.post("/editPost/:id", function (request, response) {
 app.post("/deletePost/:id", function (request, response) {
   const id = request.params.id;
   const values = [id];
+
+  if (!request.session.isLoggedIn) {
+    errorMessages.push("You have to log in");
+  }
   const query = `DELETE FROM posts WHERE id = ?;`;
 
   db.run(query, values, function (error) {
@@ -371,6 +390,9 @@ app.post("/editComment/:id/:postID", function (request, response) {
   const values = [comment, id];
 
   const errorMessages = getErrorMessagesForComments(comment);
+  if (!request.session.isLoggedIn) {
+    errorMessages.push("You have to log in");
+  }
 
   if (errorMessages.length == 0) {
     const query = `UPDATE comments
@@ -404,6 +426,10 @@ app.post("/deleteComment/:id/:postID", function (request, response) {
   const id = request.params.id;
   const postID = request.params.postID;
   const values = [id];
+
+  if (!request.session.isLoggedIn) {
+    errorMessages.push("You have to log in");
+  }
   const query = `DELETE FROM comments WHERE id = ?;`;
 
   db.run(query, values, function (error) {
@@ -446,6 +472,9 @@ app.post("/editFeedback/:id", function (request, response) {
   const values = [name, email, feedback, id];
 
   const errorMessages = getErrorMessagesForFeedback(name, email, feedback);
+  if (!request.session.isLoggedIn) {
+    errorMessages.push("You have to log in");
+  }
 
   if (errorMessages.length == 0) {
     const query = `UPDATE feedback
@@ -478,6 +507,10 @@ app.post("/editFeedback/:id", function (request, response) {
 app.post("/deleteFeedback/:id", function (request, response) {
   const id = request.params.id;
   const values = [id];
+
+  if (!request.session.isLoggedIn) {
+    errorMessages.push("You have to log in");
+  }
   const query = `DELETE FROM feedback WHERE id = ?;`;
 
   db.run(query, values, function (error) {

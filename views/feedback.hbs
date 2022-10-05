@@ -2,6 +2,28 @@
   <div class="header">
     <h1>feedback</h1>
   </div>
+  {{! <div>
+    <form id="searchBar">
+      <div class="input-group">
+        <span class="input-group-addon"><i
+            class="glyphicon glyphicon-lock"
+          ></i></span>
+        <input
+          id="search"
+          type="search"
+          class="form-control"
+          name="search"
+          placeholder=" search"
+        />
+      </div>
+      <input
+        id="searchButton"
+        class="btn btn-outline-dark"
+        type="submit"
+        value="search"
+      />
+    </form>
+  </div> }}
   {{#if feedback.length}}
     {{#each feedback}}
       <div class="homePost">

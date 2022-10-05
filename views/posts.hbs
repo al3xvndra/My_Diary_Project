@@ -5,21 +5,24 @@
   {{#if posts.length}}
     {{#each posts}}
       <div class="post">
+        <h4 class="date">{{date}}</h4>
         <h4 class="title">{{title}}</h4>
-        <h5 class="success"><img
-            class="icon"
-            src="https://img.icons8.com/wired/100/000000/thumb-up.png"
-          />
-          {{success}}</h5>
-        <h5 class="struggle"><img
-            class="icon"
-            src="https://img.icons8.com/wired/100/000000/thumbs-down.png"
-          />
-          {{struggle}}</h5>
+        <h5 class="success">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-check2" viewBox="0 0 18 18
+          " aria-label="success">
+          <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+          </svg>
+          {{success}}
+        </h5>
+        <h5 class="struggle">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 20 20
+          " aria-label="struggle">
+          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+          </svg>
+          {{struggle}}
+        </h5>
         <h5>{{content}}</h5>
         <h5 id="signature">Alex</h5>
-
-
 {{#if ../session.isLoggedIn}}
         <div class="editing">
           <form action="/editPost/{{id}}" method="get">
@@ -40,12 +43,9 @@
           </form>
         </div>
 {{/if}}
-
       </div>
-
       <div class="addComment">
-        <a href="posts/{{id}}" class="btn btn-outline-dark" id="buttonAdd">add a
-          comment here</a>
+        <a href="posts/{{id}}" class="btn btn-outline-dark" id="buttonAdd">add a comment here</a>
       </div>
     {{/each}}
   {{else}}

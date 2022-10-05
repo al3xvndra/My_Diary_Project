@@ -156,6 +156,11 @@ p {
   justify-content: center;
 }
 
+.date {
+  font-weight: 200;
+  font-size: 15px;
+}
+
 .title {
   font-weight: 700;
 }
@@ -242,6 +247,43 @@ form {
   display: inline-flex;
 }
 
+/* feedback page */
+
+#searchBar {
+  background-color: #5f93e1;
+  font-family: "Raleway";
+  padding: 2%;
+  margin: auto auto 2rem auto;
+  display: flex;
+  justify-content: space-evenly;
+  width: 30%;
+}
+
+#search {
+  display: flex;
+  float: left;
+  margin: 0;
+}
+
+#searchButton {
+  display: flex;
+  float: left;
+  margin: 0 0 0 1rem;
+}
+
+.star {
+  margin: 50px 0;
+  position: relative;
+  display: block;
+  color: red;
+  width: 0px;
+  height: 0px;
+  border-right: 100px solid transparent;
+  border-bottom: 70px solid red;
+  border-left: 100px solid transparent;
+  transform: rotate(35deg);
+}
+
 /* comments page */
 
 #goBack {
@@ -269,6 +311,16 @@ form {
   margin-bottom: 0.5rem;
 }
 
+.bi-check2 {
+  color: #5fe17d;
+}
+
+.bi-x-lg {
+  color: #e15f5f;
+}
+
 /* icons
-<a target="_blank" href="https://icons8.com/icon/63111/facebook-like">Facebook Like icon by Icons8</a>
+<a target="_blank" href="https://icons8.com/icon/43515/done">Done icon by Icons8</a>
+<a target="_blank" href="https://icons8.com/icon/43529/close">Close icon by Icons8</a>
+<a target="_blank" href="https://icons8.com/icon/43719/search">Search icon by Icons8</a>
 */
