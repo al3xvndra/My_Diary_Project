@@ -12,6 +12,13 @@
       {{/each}}
     {{/if}}
     <form action="/editFeedback/{{id}}" method="post">
+      <div class="starRate">
+        <input type="radio" name="rate" id="rate1" value="1" />
+        <input type="radio" name="rate" id="rate2" value="2" />
+        <input type="radio" name="rate" id="rate3" value="3" />
+        <input type="radio" name="rate" id="rate4" value="4" />
+        <input type="radio" name="rate" id="rate5" value="5" />
+      </div>
       <div class="input-group">
         <span class="input-group-addon"><i
             class="glyphicon glyphicon-user"

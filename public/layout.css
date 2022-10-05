@@ -249,39 +249,52 @@ form {
 
 /* feedback page */
 
-#searchBar {
-  background-color: #5f93e1;
-  font-family: "Raleway";
-  padding: 2%;
-  margin: auto auto 2rem auto;
-  display: flex;
-  justify-content: space-evenly;
-  width: 30%;
-}
-
-#search {
+#filter {
   display: flex;
   float: left;
+  width: auto;
   margin: 0;
 }
 
-#searchButton {
+#filterButton {
   display: flex;
   float: left;
   margin: 0 0 0 1rem;
 }
 
+#rate {
+  font-family: "Barlow";
+  font-size: 18;
+  display: inline-flex;
+}
+
 .star {
-  margin: 50px 0;
-  position: relative;
-  display: block;
-  color: red;
-  width: 0px;
-  height: 0px;
-  border-right: 100px solid transparent;
-  border-bottom: 70px solid red;
-  border-left: 100px solid transparent;
-  transform: rotate(35deg);
+  width: 40px;
+}
+
+#filterBar {
+  font-family: "Raleway";
+  padding: 2%;
+  margin: auto;
+  display: flex;
+  justify-content: space-evenly;
+  width: auto;
+}
+
+.starFilter {
+  border: 1px solid black;
+  width: auto;
+  margin-left: 25%;
+  margin-right: 25%;
+  margin-bottom: 2rem;
+}
+
+.starFilter p {
+  font-family: "Raleway";
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  width: auto;
 }
 
 /* comments page */
@@ -323,4 +336,19 @@ form {
 <a target="_blank" href="https://icons8.com/icon/43515/done">Done icon by Icons8</a>
 <a target="_blank" href="https://icons8.com/icon/43529/close">Close icon by Icons8</a>
 <a target="_blank" href="https://icons8.com/icon/43719/search">Search icon by Icons8</a>
+<a target="_blank" href="https://icons8.com/icon/85185/star">Star icon by Icons8</a>
 */
+
+.star {
+  background-color: #5fe17d;
+  /* margin: 50px 0;
+  position: relative;
+  display: block;
+  color: red;
+  width: 0px;
+  height: 0px;
+  border-right: 100px solid transparent;
+  border-bottom: 70px solid red;
+  border-left: 100px solid transparent;
+  transform: rotate(35deg); */
+}

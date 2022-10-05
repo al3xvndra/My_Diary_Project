@@ -1,43 +1,18 @@
 <div id="mainContact">
   <div class="header">
-    <h1>feedback</h1>
-  </div>
-  <div class="starFilter">
-    <p>Filter by rate:</p>
-    <form id="filterBar" action="/filterByRate" method="GET">
-      <div class="input-group">
-        <span class="input-group-addon"><i
-            class="glyphicon glyphicon-lock"
-          ></i></span>
-        <input
-          id="filter"
-          type="number"
-          class="form-control"
-          name="filter"
-          placeholder=" type rate here"
-          min="1"
-          max="5"
-        />
-      </div>
-      <input
-        id="filterButton"
-        class="btn btn-outline-dark"
-        type="submit"
-        value="filter"
-      />
-    </form>
+    <h1>filtered feedback</h1>
   </div>
   {{#if feedback.length}}
     {{#each feedback}}
       <div class="homePost">
-        <h4 id="rate">{{rate}}/5
+        <h4 id="rate">{{onlyFeedback.rate}}/5
           <img
             class="icon"
             src="https://img.icons8.com/material-rounded/96/000000/star--v1.png"
           /></h4>
-        <h4 id="title">{{email}}</h4>
-        <h5>{{feedback}}</h5>
-        <h5 id="signature">{{name}}</h5>
+        <h4 id="title">{{onlyFeedback.email}}</h4>
+        <h5>{{onlyFeedback.feedback}}</h5>
+        <h5 id="signature">{{onlyFeedback.name}}</h5>
         {{! edit & delete }}
         <div class="editing">
           <form action="/editFeedback/{{id}}" method="get">
@@ -63,4 +38,5 @@
   {{else}}
     <h4 id="noContent">nothing here</h4>
   {{/if}}
+
 </div>

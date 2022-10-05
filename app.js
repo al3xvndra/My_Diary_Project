@@ -469,16 +469,22 @@ app.post("/editFeedback/:id", function (request, response) {
   const name = request.body.feedbackName;
   const email = request.body.feedbackEmail;
   const feedback = request.body.feedback;
-  const values = [name, email, feedback, id];
+  const rate = request.body.rate;
+  const values = [name, email, feedback, rate, id];
 
-  const errorMessages = getErrorMessagesForFeedback(name, email, feedback);
+  const errorMessages = getErrorMessagesForFeedback(
+    name,
+    email,
+    feedback,
+    rate
+  );
   if (!request.session.isLoggedIn) {
     errorMessages.push("You have to log in");
   }
 
   if (errorMessages.length == 0) {
     const query = `UPDATE feedback
-  SET name = ?, email = ?, feedback = ? WHERE id = ?;`;
+  SET name = ?, email = ?, feedback = ?, rate = ? WHERE id = ?;`;
 
     db.run(query, values, function (error) {
       if (error) {
@@ -541,19 +547,41 @@ app.get("/feedback", function (request, response) {
   });
 });
 
+app.get("/filterByRate", function (request, response) {
+  const rate = request.body.filter;
+  const values = [rate];
+
+  const query = `SELECT * FROM feedback WHERE rate = ?`;
+
+  db.all(query, values, function (error, onlyFeedback) {
+    const errorMessages = [];
+    if (error) {
+      errorMessages.push("Internal server error");
+    }
+    const model = {
+      errorMessages,
+      onlyFeedback,
+    };
+    response.render("filterFeedback.hbs", model);
+  });
+});
+
 //contact page
 
 app.post("/contact", function (request, response) {
   const name = request.body.feedbackName;
   const email = request.body.feedbackEmail;
   const feedback = request.body.feedback;
+  const rate = request.body.rate;
 
   const errorMessages = getErrorMessagesForFeedback(name, email, feedback);
 
   if (errorMessages.length == 0) {
-    const query = `INSERT INTO feedback (name, email, feedback) VALUES(?, ?, ?)`;
+    console.log(rate);
 
-    const values = [name, email, feedback];
+    const query = `INSERT INTO feedback (name, email, feedback, rate) VALUES(?, ?, ?, ?)`;
+
+    const values = [name, email, feedback, rate];
 
     db.run(query, values, function (error) {
       response.redirect("/thankYou");
