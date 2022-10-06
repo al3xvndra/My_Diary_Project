@@ -15,6 +15,7 @@
     "express-handlebars": "^6.0.6",
     "express-session": "^1.17.3",
     "like": "^0.3.0",
+    "multer": "^1.4.5-lts.1",
     "sqlite3": "^5.1.1"
   },
   "repository": {

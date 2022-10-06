@@ -3,10 +3,23 @@ const expressHandlebars = require("express-handlebars");
 const bodyParser = require("body-parser");
 const sqlite3 = require("sqlite3");
 const like = require("like");
+const multer = require("multer");
 const db = new sqlite3.Database("database.db");
 const expressSession = require("express-session");
 const adminUsername = "alex";
 const adminPassword = "me";
+
+const storage = multer.diskStorage({
+  destination(req, file, cb) {
+    cb(null, "public/uploads");
+  },
+  filename(req, file, cb) {
+    console.log(file);
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage });
 
 db.run(`PRAGMA foreign_keys = ON`);
 
@@ -103,9 +116,16 @@ function getErrorMessagesForPosts(date, title, success, struggle, content) {
   return errorMessages;
 }
 
-function getErrorMessagesForFeedback(name, email, feedback) {
+function getErrorMessagesForFeedback(name, email, feedback, rate) {
   const errorMessages = [];
 
+  if (isNaN(rate)) {
+    errorMessages.push("Please leave a star review");
+  } else if (rate < 0) {
+    errorMessages.push("Please enter a rate between 1 and 5");
+  } else if (5 < rate) {
+    errorMessages.push("Please enter a rate between 1 and 5");
+  }
   if (name.length == 0) {
     errorMessages.push("The name field can't be empty.");
   }
@@ -219,6 +239,14 @@ app.post("/posts/:id", function (request, response) {
 
 //create page
 
+app.get("/addPhoto", function (request, response) {
+  response.render("create.hbs");
+});
+
+app.post("/addPhoto", upload.single("postPhoto"), function (request, response) {
+  response.render("create.hbs");
+});
+
 app.get("/create", function (request, response) {
   if (request.session.isLoggedIn) {
     response.render("create.hbs");
@@ -233,6 +261,7 @@ app.post("/create", function (request, response) {
   const success = request.body.postSuccess;
   const struggle = request.body.postStruggle;
   const content = request.body.postContent;
+  const imageURL = request.body.postPhoto;
 
   const errorMessages = getErrorMessagesForPosts(
     date,
@@ -247,10 +276,9 @@ app.post("/create", function (request, response) {
   }
 
   if (errorMessages.length == 0) {
-    console.log(date);
-    const query = `INSERT INTO posts (date, title, success, struggle, content) VALUES(?, ?, ?, ?, ?)`;
+    const query = `INSERT INTO posts (date, title, success, struggle, content, imageURL) VALUES(?, ?, ?, ?, ?, ?)`;
 
-    const values = [date, title, success, struggle, content];
+    const values = [date, title, success, struggle, content, imageURL];
 
     db.run(query, values, function (error) {
       response.redirect("/posts");
@@ -622,11 +650,14 @@ app.post("/contact", function (request, response) {
   const feedback = request.body.feedback;
   const rate = request.body.rate;
 
-  const errorMessages = getErrorMessagesForFeedback(name, email, feedback);
+  const errorMessages = getErrorMessagesForFeedback(
+    name,
+    email,
+    feedback,
+    rate
+  );
 
   if (errorMessages.length == 0) {
-    console.log(rate);
-
     const query = `INSERT INTO feedback (name, email, feedback, rate) VALUES(?, ?, ?, ?)`;
 
     const values = [name, email, feedback, rate];
