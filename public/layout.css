@@ -188,6 +188,22 @@ p {
   font-family: "Raleway";
 }
 
+/* contact page */
+
+.contactLinks {
+  display: flex;
+  padding-top: 2rem;
+  padding-bottom: 1rem;
+  font-family: "Abril Fatface", cursive;
+  justify-content: center;
+}
+
+.socialMedia {
+  display: flex;
+  padding-bottom: 5%;
+  justify-content: center;
+}
+
 /* log in page */
 
 form {
@@ -202,7 +218,7 @@ form {
   border: 1px solid;
   padding: 1rem;
   font-family: "Raleway";
-  margin: 0 auto 10rem auto;
+  margin: 0 auto 2rem auto;
   box-shadow: 10px 10px;
 }
 
@@ -259,7 +275,8 @@ form {
 #filterButton {
   display: flex;
   float: left;
-  margin: 0 0 0 1rem;
+  margin: auto;
+  padding: auto;
 }
 
 #rate {
@@ -274,7 +291,7 @@ form {
 
 #filterBar {
   font-family: "Raleway";
-  padding: 2%;
+  padding: 0 2% 0 2%;
   margin: auto;
   display: flex;
   justify-content: space-evenly;
@@ -295,6 +312,15 @@ form {
   flex-direction: column;
   width: fit-content;
   width: auto;
+  margin-left: 0 !important;
+}
+
+#firstFilter {
+  background-color: #f3c0c0;
+}
+
+#secondFilter {
+  background-color: aquamarine;
 }
 
 /* comments page */
@@ -338,17 +364,3 @@ form {
 <a target="_blank" href="https://icons8.com/icon/43719/search">Search icon by Icons8</a>
 <a target="_blank" href="https://icons8.com/icon/85185/star">Star icon by Icons8</a>
 */
-
-.star {
-  background-color: #5fe17d;
-  /* margin: 50px 0;
-  position: relative;
-  display: block;
-  color: red;
-  width: 0px;
-  height: 0px;
-  border-right: 100px solid transparent;
-  border-bottom: 70px solid red;
-  border-left: 100px solid transparent;
-  transform: rotate(35deg); */
-}

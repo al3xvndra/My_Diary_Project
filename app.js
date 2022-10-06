@@ -2,6 +2,7 @@ const express = require("express");
 const expressHandlebars = require("express-handlebars");
 const bodyParser = require("body-parser");
 const sqlite3 = require("sqlite3");
+const like = require("like");
 const db = new sqlite3.Database("database.db");
 const expressSession = require("express-session");
 const adminUsername = "alex";
@@ -527,7 +528,7 @@ app.post("/deleteFeedback/:id", function (request, response) {
 //feedback page
 
 app.get("/feedback", function (request, response) {
-  const query = `SELECT * FROM feedback`;
+  const query = `SELECT * FROM feedback ORDER BY id DESC`;
 
   db.all(query, function (error, feedback) {
     const errorMessages = [];
@@ -547,29 +548,70 @@ app.get("/feedback", function (request, response) {
   });
 });
 
-app.get("/feedback/:rate", function (request, response) {
-  response.render("filterFeedback.hbs");
-});
-
-app.post("/feedback/:rate", function (request, response) {
-  const rate = request.body.filter;
-  const values = [rate];
-
-  const query = `SELECT * FROM feedback WHERE rate = ?`;
-  console.log(rate);
-  db.all(query, values, function (error, feedback) {
-    const errorMessages = [];
-    if (error) {
-      errorMessages.push("Internal server error");
-      console.log(rate);
-    }
-    const model = {
-      errorMessages,
-      feedback,
-    };
+app.get("/feedback/review", function (request, response) {
+  const rate = request.query.filter;
+  const name = request.query.filterName;
+  if ((name, rate)) {
+    const values = ["%" + name + "%", "%" + rate + "%"];
+    const query = `SELECT * FROM feedback WHERE name LIKE ? AND rate LIKE ?`;
+    db.all(query, values, function (error, feedback) {
+      const errorMessages = [];
+      if (error) {
+        errorMessages.push("Internal server error");
+      }
+      const model = {
+        errorMessages,
+        feedback,
+      };
+      if (request.session.isLoggedIn) {
+        response.render("feedback.hbs", model);
+      } else {
+        response.redirect("/logIn");
+      }
+    });
+  } else if (name) {
+    const values = ["%" + name + "%"];
+    const query = `SELECT * FROM feedback WHERE name LIKE ?`;
+    console.log(name);
+    db.all(query, values, function (error, feedback) {
+      const errorMessages = [];
+      if (error) {
+        errorMessages.push("Internal server error");
+        console.log(name);
+      }
+      const model = {
+        errorMessages,
+        feedback,
+      };
+      if (request.session.isLoggedIn) {
+        response.render("feedback.hbs", model);
+      } else {
+        response.redirect("/logIn");
+      }
+    });
+  } else if (rate) {
+    const values = ["%" + rate + "%"];
+    const query = `SELECT * FROM feedback WHERE rate LIKE ?`;
     console.log(rate);
-    response.render("filterFeedback.hbs", model);
-  });
+    db.all(query, values, function (error, feedback) {
+      const errorMessages = [];
+      if (error) {
+        errorMessages.push("Internal server error");
+        console.log(rate);
+      }
+      const model = {
+        errorMessages,
+        feedback,
+      };
+      if (request.session.isLoggedIn) {
+        response.render("feedback.hbs", model);
+      } else {
+        response.redirect("/logIn");
+      }
+    });
+  } else {
+    response.render("feedback.hbs");
+  }
 });
 
 //contact page
