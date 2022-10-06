@@ -547,21 +547,27 @@ app.get("/feedback", function (request, response) {
   });
 });
 
-app.get("/filterByRate", function (request, response) {
+app.get("/feedback/:rate", function (request, response) {
+  response.render("filterFeedback.hbs");
+});
+
+app.post("/feedback/:rate", function (request, response) {
   const rate = request.body.filter;
   const values = [rate];
 
   const query = `SELECT * FROM feedback WHERE rate = ?`;
-
-  db.all(query, values, function (error, onlyFeedback) {
+  console.log(rate);
+  db.all(query, values, function (error, feedback) {
     const errorMessages = [];
     if (error) {
       errorMessages.push("Internal server error");
+      console.log(rate);
     }
     const model = {
       errorMessages,
-      onlyFeedback,
+      feedback,
     };
+    console.log(rate);
     response.render("filterFeedback.hbs", model);
   });
 });

@@ -2,33 +2,33 @@
   <div class="header">
     <h1>feedback</h1>
   </div>
-  <div class="starFilter">
-    <p>Filter by rate:</p>
-    <form id="filterBar" action="/filterByRate" method="GET">
-      <div class="input-group">
-        <span class="input-group-addon"><i
-            class="glyphicon glyphicon-lock"
-          ></i></span>
-        <input
-          id="filter"
-          type="number"
-          class="form-control"
-          name="filter"
-          placeholder=" type rate here"
-          min="1"
-          max="5"
-        />
-      </div>
-      <input
-        id="filterButton"
-        class="btn btn-outline-dark"
-        type="submit"
-        value="filter"
-      />
-    </form>
-  </div>
   {{#if feedback.length}}
     {{#each feedback}}
+      <div class="starFilter">
+        <p>Filter by rate:</p>
+        <form id="filterBar" action="/feedback/{{rate}}" method="post">
+          <div class="input-group">
+            <span class="input-group-addon"><i
+                class="glyphicon glyphicon-lock"
+              ></i></span>
+            <input
+              id="filter"
+              type="number"
+              class="form-control"
+              name="filter"
+              placeholder=" type rate here"
+              min="1"
+              max="5"
+            />
+          </div>
+          <input
+            id="filterButton"
+            class="btn btn-outline-dark"
+            type="submit"
+            value="filter"
+          />
+        </form>
+      </div>
       <div class="homePost">
         <h4 id="rate">{{rate}}/5
           <img
