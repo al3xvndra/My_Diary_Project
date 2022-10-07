@@ -269,6 +269,51 @@ form {
 
 /* feedback page */
 
+.starRate {
+  display: flex;
+  margin-bottom: 1rem;
+  transform: rotateY(180deg);
+  justify-content: right;
+}
+
+.starRate input {
+  display: none;
+}
+
+.starRate label {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+}
+
+.starRate label:before {
+  content: "\f005";
+  font-family: fontAwesome;
+  position: relative;
+  display: block;
+  font-size: 30px;
+  color: rgb(217, 224, 231);
+}
+
+.starRate label:after {
+  content: "\f005";
+  font-family: fontAwesome;
+  position: relative;
+  top: -45;
+  display: block;
+  font-size: 30px;
+  color: rgb(241, 214, 93);
+  opacity: 0;
+  transition: 0.2s;
+  z-index: 2;
+}
+
+.starRate label:hover:after,
+.starRate label:hover ~ label:after,
+.starRate input:checked ~ label:after {
+  opacity: 1;
+}
+
 #filter {
   display: flex;
   float: left;
@@ -281,16 +326,6 @@ form {
   float: left;
   margin: auto;
   padding: auto;
-}
-
-#rate {
-  font-family: "Barlow";
-  font-size: 18;
-  display: inline-flex;
-}
-
-.star {
-  width: 40px;
 }
 
 #filterBar {
@@ -352,6 +387,61 @@ form {
 
 .bi-x-lg {
   color: #e15f5f;
+}
+
+@media only screen and (max-width: 600px) {
+  nav {
+    padding-left: 2%;
+    padding-right: 2%;
+    height: 2rem;
+    font-size: 9px;
+  }
+
+  a {
+    padding: 5px;
+  }
+
+  h1 {
+    font-size: 20px !important;
+  }
+
+  h5 {
+    font-size: 15px !important;
+  }
+
+  #logOut {
+    padding: 5px;
+  }
+
+  /* home page */
+
+  .header {
+    padding-top: 3rem;
+  }
+
+  .homePost {
+    width: 90%;
+  }
+
+  /* posts page */
+
+  .post {
+    width: 90%;
+  }
+
+  #signature {
+    font-size: 50px !important;
+  }
+
+  /* contact page */
+
+  #logInWindow {
+    width: 90%;
+  }
+
+  .socialMedia {
+    width: 100%;
+  }
 }
 
 /* icons

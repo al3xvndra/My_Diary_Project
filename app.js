@@ -7,6 +7,9 @@ const multer = require("multer");
 const db = new sqlite3.Database("database.db");
 const expressSession = require("express-session");
 const app = express();
+const minRate = 1;
+const maxRate = 5;
+const minLength = 0;
 const adminUsername = "alex";
 const adminPassword = "me";
 
@@ -87,7 +90,7 @@ app.use(function (request, response, next) {
 function getErrorMessagesForComments(comment) {
   const errorMessages = [];
 
-  if (comment.length == 0) {
+  if (comment.length == minLength) {
     errorMessages.push("The comment field can't be empty.");
   }
 
@@ -96,19 +99,19 @@ function getErrorMessagesForComments(comment) {
 
 function getErrorMessagesForPosts(date, title, success, struggle, content) {
   const errorMessages = [];
-  if (date.length == 0) {
+  if (date.length == minLength) {
     errorMessages.push("The date field can't be empty.");
   }
-  if (title.length == 0) {
+  if (title.length == minLength) {
     errorMessages.push("The title field can't be empty.");
   }
-  if (success.length == 0) {
+  if (success.length == minLength) {
     errorMessages.push("The success field can't be empty.");
   }
-  if (struggle.length == 0) {
+  if (struggle.length == minLength) {
     errorMessages.push("The struggle field can't be empty.");
   }
-  if (content.length == 0) {
+  if (content.length == minLength) {
     errorMessages.push("The content field can't be empty.");
   }
   return errorMessages;
@@ -119,20 +122,25 @@ function getErrorMessagesForFeedback(name, email, feedback, rate) {
 
   if (isNaN(rate)) {
     errorMessages.push("Please leave a star review");
-  } else if (rate < 0) {
-    errorMessages.push("Please enter a rate between 1 and 5");
-  } else if (5 < rate) {
-    errorMessages.push("Please enter a rate between 1 and 5");
+  } else if (rate < minRate) {
+    errorMessages.push(
+      "Please enter a rate between " + minRate + " and " + maxRate + "."
+    );
+  } else if (maxRate < rate) {
+    errorMessages.push(
+      "Please enter a rate between " + minRate + " and " + maxRate + "."
+    );
   }
-  if (name.length == 0) {
+  if (name.length == minLength) {
     errorMessages.push("The name field can't be empty.");
   }
-  if (email.length == 0) {
+  if (email.length == minLength) {
     errorMessages.push("The email field can't be empty.");
   }
-  if (feedback.length == 0) {
+  if (feedback.length == minLength) {
     errorMessages.push("The feedback field can't be empty.");
   }
+
   return errorMessages;
 }
 
@@ -235,18 +243,6 @@ app.post("/posts/:id", function (request, response) {
   }
 });
 
-//create page
-
-// app.get("/addPhoto", function (request, response) {
-//   response.render("create.hbs");
-// });
-
-// app.post("/addPhoto", upload.single("photo"), function (request, response) {
-//   console.log(request.body);
-//   console.log(request.file);
-//   response.render("create.hbs");
-// });
-
 app.get("/create", function (request, response) {
   if (request.session.isLoggedIn) {
     response.render("create.hbs");
@@ -268,7 +264,8 @@ app.post("/create", upload.single("photo"), function (request, response) {
     title,
     success,
     struggle,
-    content
+    content,
+    imageURL
   );
 
   if (!request.session.isLoggedIn) {
