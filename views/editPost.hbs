@@ -10,7 +10,7 @@
         </div>
       {{/each}}
     {{/if}}
-    <form action="/editPost/{{id}}" method="post">
+    <form action="/editPost/{{id}}" method="post" enctype="multipart/form-data">
       <div class="input-group">
         <span class="input-group-addon"><i
             class="glyphicon glyphicon-lock"
@@ -69,6 +69,18 @@
           class="form-control"
           name="postContent"
           value="{{post.content}}"
+        />
+      </div>
+      <div class="input-group">
+        <span class="input-group-addon"><i
+            class="glyphicon glyphicon-lock"
+          ></i></span>
+        <input
+          id="postPhoto"
+          type="file"
+          class="form-control"
+          name="photo"
+          value="{{post.imageURL}}"
         />
       </div>
       <h5 id="signature">Alex</h5>

@@ -10,7 +10,7 @@
         </div>
       {{/each}}
     {{/if}}
-    <form action="/create" method="post">
+    <form action="/create" method="post" enctype="multipart/form-data">
       <div class="input-group">
         <span class="input-group-addon"><i
             class="glyphicon glyphicon-lock"
@@ -71,25 +71,18 @@
           placeholder=" content..."
         />
       </div>
-      <form action="/addPhoto" method="POST" enctype="multipart/form-data">
-        <div class="input-group">
-          <span class="input-group-addon"><i
-              class="glyphicon glyphicon-lock"
-            ></i></span>
-          <input
-            id="postPhoto"
-            type="file"
-            class="form-control"
-            name="postPhoto"
-          />
-        </div>
-        <input
-          id="add"
-          class="btn btn-outline-primary"
-          type="submit"
-          value="post"
-        />
-      </form>
+      <div class="input-group">
+        <span class="input-group-addon"><i
+            class="glyphicon glyphicon-lock"
+          ></i></span>
+        <input id="postPhoto" type="file" class="form-control" name="photo" />
+      </div>
+      <input
+        id="add"
+        class="btn btn-outline-primary"
+        type="submit"
+        value="post"
+      />
       <h5 id="signature">Alex</h5>
     </form>
   </div>

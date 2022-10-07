@@ -6,15 +6,15 @@ const like = require("like");
 const multer = require("multer");
 const db = new sqlite3.Database("database.db");
 const expressSession = require("express-session");
+const app = express();
 const adminUsername = "alex";
 const adminPassword = "me";
 
 const storage = multer.diskStorage({
-  destination(req, file, cb) {
+  destination(request, file, cb) {
     cb(null, "public/uploads");
   },
-  filename(req, file, cb) {
-    console.log(file);
+  filename(request, file, cb) {
     cb(null, file.originalname);
   },
 });
@@ -47,8 +47,6 @@ db.run(
     comment TEXT,
     FOREIGN KEY(postID) REFERENCES posts(id) ON DELETE CASCADE)`
 );
-
-const app = express();
 
 app.engine(
   "hbs",
@@ -239,13 +237,15 @@ app.post("/posts/:id", function (request, response) {
 
 //create page
 
-app.get("/addPhoto", function (request, response) {
-  response.render("create.hbs");
-});
+// app.get("/addPhoto", function (request, response) {
+//   response.render("create.hbs");
+// });
 
-app.post("/addPhoto", upload.single("postPhoto"), function (request, response) {
-  response.render("create.hbs");
-});
+// app.post("/addPhoto", upload.single("photo"), function (request, response) {
+//   console.log(request.body);
+//   console.log(request.file);
+//   response.render("create.hbs");
+// });
 
 app.get("/create", function (request, response) {
   if (request.session.isLoggedIn) {
@@ -255,13 +255,13 @@ app.get("/create", function (request, response) {
   }
 });
 
-app.post("/create", function (request, response) {
+app.post("/create", upload.single("photo"), function (request, response) {
   const date = request.body.postDate;
   const title = request.body.postTitle;
   const success = request.body.postSuccess;
   const struggle = request.body.postStruggle;
   const content = request.body.postContent;
-  const imageURL = request.body.postPhoto;
+  const imageURL = request.file.filename;
 
   const errorMessages = getErrorMessagesForPosts(
     date,
@@ -323,14 +323,15 @@ app.get("/editPost/:id", function (request, response) {
   });
 });
 
-app.post("/editPost/:id", function (request, response) {
+app.post("/editPost/:id", upload.single("photo"), function (request, response) {
   const id = request.params.id;
   const date = request.body.postDate;
   const title = request.body.postTitle;
   const success = request.body.postSuccess;
   const struggle = request.body.postStruggle;
   const content = request.body.postContent;
-  const values = [date, title, success, struggle, content, id];
+  const imageURL = request.file.filename;
+  const values = [date, title, success, struggle, content, imageURL, id];
 
   const errorMessages = getErrorMessagesForPosts(
     date,
@@ -346,7 +347,7 @@ app.post("/editPost/:id", function (request, response) {
 
   if (errorMessages.length == 0) {
     const query = `UPDATE posts
-  SET date = ?, title = ?, success = ?, struggle = ?, content = ? WHERE id = ?;`;
+  SET date = ?, title = ?, success = ?, struggle = ?, content = ?, imageURL = ? WHERE id = ?;`;
 
     db.run(query, values, function (error) {
       if (error) {
@@ -577,7 +578,7 @@ app.get("/feedback", function (request, response) {
 });
 
 app.get("/feedback/review", function (request, response) {
-  const rate = request.query.filter;
+  const rate = request.query.filterRate;
   const name = request.query.filterName;
   if ((name, rate)) {
     const values = ["%" + name + "%", "%" + rate + "%"];
@@ -600,12 +601,10 @@ app.get("/feedback/review", function (request, response) {
   } else if (name) {
     const values = ["%" + name + "%"];
     const query = `SELECT * FROM feedback WHERE name LIKE ?`;
-    console.log(name);
     db.all(query, values, function (error, feedback) {
       const errorMessages = [];
       if (error) {
         errorMessages.push("Internal server error");
-        console.log(name);
       }
       const model = {
         errorMessages,
@@ -620,12 +619,10 @@ app.get("/feedback/review", function (request, response) {
   } else if (rate) {
     const values = ["%" + rate + "%"];
     const query = `SELECT * FROM feedback WHERE rate LIKE ?`;
-    console.log(rate);
     db.all(query, values, function (error, feedback) {
       const errorMessages = [];
       if (error) {
         errorMessages.push("Internal server error");
-        console.log(rate);
       }
       const model = {
         errorMessages,
