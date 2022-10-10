@@ -87,13 +87,22 @@ app.use(function (request, response, next) {
 
 //all error handling functions
 
-function getErrorMessagesForComments(comment) {
+function getErrorMessagesForFilter(rate, name) {
   const errorMessages = [];
-
-  if (comment.length == minLength) {
-    errorMessages.push("The comment field can't be empty.");
+  if (rate == "" && name == "") {
+    errorMessages.push("Both filter fields can't be empty.");
   }
-
+  if (isNaN(rate)) {
+    errorMessages.push("Rate must be a number.");
+  } else if (rate < minRate) {
+    errorMessages.push(
+      "Please enter a rate between " + minRate + " and " + maxRate + "."
+    );
+  } else if (maxRate < grade) {
+    errorMessages.push(
+      "Please enter a rate between " + minRate + " and " + maxRate + "."
+    );
+  }
   return errorMessages;
 }
 
@@ -114,6 +123,16 @@ function getErrorMessagesForPosts(date, title, success, struggle, content) {
   if (content.length == minLength) {
     errorMessages.push("The content field can't be empty.");
   }
+  return errorMessages;
+}
+
+function getErrorMessagesForComments(comment) {
+  const errorMessages = [];
+
+  if (comment.length == minLength) {
+    errorMessages.push("The comment field can't be empty.");
+  }
+
   return errorMessages;
 }
 
@@ -257,22 +276,26 @@ app.post("/create", upload.single("photo"), function (request, response) {
   const success = request.body.postSuccess;
   const struggle = request.body.postStruggle;
   const content = request.body.postContent;
-  const imageURL = request.file.filename;
 
   const errorMessages = getErrorMessagesForPosts(
     date,
     title,
     success,
     struggle,
-    content,
-    imageURL
+    content
   );
+
+  if (!request.file) {
+    errorMessages.push("Please upload a photo");
+  }
 
   if (!request.session.isLoggedIn) {
     errorMessages.push("You have to log in");
   }
 
   if (errorMessages.length == 0) {
+    const imageURL = request.file.filename;
+
     const query = `INSERT INTO posts (date, title, success, struggle, content, imageURL) VALUES(?, ?, ?, ?, ?, ?)`;
 
     const values = [date, title, success, struggle, content, imageURL];
@@ -308,6 +331,7 @@ app.get("/editPost/:id", function (request, response) {
       errorMessages.push("Internal server error");
     }
     const model = {
+      errorMessages,
       post,
       id,
     };
@@ -327,8 +351,6 @@ app.post("/editPost/:id", upload.single("photo"), function (request, response) {
   const success = request.body.postSuccess;
   const struggle = request.body.postStruggle;
   const content = request.body.postContent;
-  const imageURL = request.file.filename;
-  const values = [date, title, success, struggle, content, imageURL, id];
 
   const errorMessages = getErrorMessagesForPosts(
     date,
@@ -338,13 +360,20 @@ app.post("/editPost/:id", upload.single("photo"), function (request, response) {
     content
   );
 
+  if (!request.file) {
+    errorMessages.push("Please upload a photo");
+  }
+
   if (!request.session.isLoggedIn) {
     errorMessages.push("You have to log in");
   }
 
   if (errorMessages.length == 0) {
+    const imageURL = request.file.filename;
     const query = `UPDATE posts
   SET date = ?, title = ?, success = ?, struggle = ?, content = ?, imageURL = ? WHERE id = ?;`;
+
+    const values = [date, title, success, struggle, content, imageURL, id];
 
     db.run(query, values, function (error) {
       if (error) {
@@ -398,6 +427,7 @@ app.get("/editComment/:id", function (request, response) {
       errorMessages.push("Internal server error");
     }
     const model = {
+      errorMessages,
       comment,
       id,
     };
@@ -417,6 +447,7 @@ app.post("/editComment/:id/:postID", function (request, response) {
   const values = [comment, id];
 
   const errorMessages = getErrorMessagesForComments(comment);
+
   if (!request.session.isLoggedIn) {
     errorMessages.push("You have to log in");
   }
@@ -479,6 +510,7 @@ app.get("/editFeedback/:id", function (request, response) {
       errorMessages.push("Internal server error");
     }
     const model = {
+      errorMessages,
       oneFeedback,
       id,
     };
@@ -505,6 +537,7 @@ app.post("/editFeedback/:id", function (request, response) {
     feedback,
     rate
   );
+
   if (!request.session.isLoggedIn) {
     errorMessages.push("You have to log in");
   }
@@ -563,6 +596,7 @@ app.get("/feedback", function (request, response) {
       errorMessages.push("Internal server error");
     }
     const model = {
+      errorMessages,
       feedback,
     };
 
@@ -632,7 +666,12 @@ app.get("/feedback/review", function (request, response) {
       }
     });
   } else {
-    response.render("feedback.hbs");
+    const errorMessages = getErrorMessagesForFilter(rate, name);
+    const model = {
+      errorMessages,
+    };
+    console.log(errorMessages);
+    response.render("feedback.hbs", model);
   }
 });
 

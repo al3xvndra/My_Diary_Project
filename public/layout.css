@@ -44,23 +44,6 @@ p {
   margin: 0.5rem !important;
 }
 
-.errors {
-  width: fit-content;
-  padding: 1%;
-  font-size: 12px;
-  z-index: 3;
-  margin: auto auto 2rem auto;
-  border: 10px dotted #e15f5f;
-  background-color: #f3c0c0;
-  border-radius: 30px;
-  font-family: "Raleway";
-}
-
-.errorTitle {
-  font-size: 15;
-  font-weight: 700;
-}
-
 #logOut {
   text-decoration: none !important;
   color: black !important;
@@ -330,7 +313,6 @@ form {
 
 #filterBar {
   font-family: "Raleway";
-  padding: 0 2% 0 2%;
   margin: auto;
   display: flex;
   justify-content: space-evenly;
@@ -339,7 +321,9 @@ form {
 
 .starFilter {
   border: 1px solid black;
+  font-family: "Raleway";
   width: auto;
+  padding: 1rem;
   margin-left: 25%;
   margin-right: 25%;
   margin-bottom: 2rem;
@@ -381,13 +365,13 @@ form {
   margin-bottom: 0.5rem;
 }
 
-.bi-check2 {
+/* .bi-check2 {
   color: #5fe17d;
 }
 
 .bi-x-lg {
   color: #e15f5f;
-}
+} */
 
 @media only screen and (max-width: 600px) {
   nav {
@@ -449,4 +433,13 @@ form {
 <a target="_blank" href="https://icons8.com/icon/43529/close">Close icon by Icons8</a>
 <a target="_blank" href="https://icons8.com/icon/43719/search">Search icon by Icons8</a>
 <a target="_blank" href="https://icons8.com/icon/85185/star">Star icon by Icons8</a>
+*/
+
+/* resources
+
+star review:
+https://www.youtube.com/watch?v=Ep78KjstQuw&ab_channel=OnlineTutorials
+
+photo upload:
+https://www.youtube.com/watch?v=Ep78KjstQuw&ab_channel=OnlineTutorials
 */

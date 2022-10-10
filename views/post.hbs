@@ -3,6 +3,13 @@
     <a href="/posts" id="goBack">go back</a>
     <h1>comment below!</h1>
   </div>
+  {{#if errorMessages.length}}
+              {{#each errorMessages}}
+                <div class="alert alert-danger" role="alert">
+                  {{this}}
+                </div>
+              {{/each}}
+            {{/if}}
   {{#if post}}
     <div class="post">
       <h4 class="title">{{post.title}}</h4>
@@ -87,10 +94,10 @@
           </div>
         {{/each}}
       {{else}}
-        <h5>no comments yet</h5>
+        <h5>No comments yet</h5>
       {{/if}}
     </div>
   {{else}}
-    <h5>nothing here</h5>
+    <h5>This post doesn't exist</h5>
   {{/if}}
 </div>

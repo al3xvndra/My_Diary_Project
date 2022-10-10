@@ -4,6 +4,13 @@
     <a href="/feedback" id="goBack">show all</a>
   </div>
   <div class="starFilter">
+    {{#if errorMessages.length}}
+      {{#each errorMessages}}
+        <div class="alert alert-danger" role="alert">
+          {{this}}
+        </div>
+      {{/each}}
+    {{/if}}
     <form id="filterBar" action="/feedback/review" method="get">
       <div class="input-group">
         <span class="input-group-addon"><i
@@ -17,8 +24,6 @@
             class="form-control"
             name="filterRate"
             placeholder=" type rate here"
-            min="1"
-            max="5"
           />
         </div>
       </div>
