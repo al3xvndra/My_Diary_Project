@@ -213,10 +213,13 @@ app.get("/posts/:id", function (request, response) {
   const queryPosts = `SELECT * FROM posts WHERE id = ?`;
   const queryComments = `SELECT * FROM comments WHERE postID = ?`;
   const values = [id];
+  const errorMessages = [];
 
   db.get(queryPosts, values, function (error, post) {
+    if (error) {
+      errorMessages.push("Internal server error");
+    }
     db.all(queryComments, values, function (error, comments) {
-      const errorMessages = [];
       if (error) {
         errorMessages.push("Internal server error");
       }
@@ -242,6 +245,15 @@ app.post("/posts/:id", function (request, response) {
     const values = [comment, postID];
 
     db.run(queryComments, values, function (error) {
+      if (error) {
+        errorMessages.push("Internal server error");
+        const model = {
+          errorMessages,
+          postID,
+          comment,
+        };
+        response.render("post.hbs", model);
+      }
       response.redirect("/posts/" + postID);
     });
   } else {
@@ -250,7 +262,13 @@ app.post("/posts/:id", function (request, response) {
     const values = [postID];
 
     db.get(queryPosts, values, function (error, post) {
+      if (error) {
+        errorMessages.push("Internal server error");
+      }
       db.all(queryComments, values, function (error, comments) {
+        if (error) {
+          errorMessages.push("Internal server error");
+        }
         const model = {
           errorMessages,
           post,
@@ -301,17 +319,48 @@ app.post("/create", upload.single("photo"), function (request, response) {
     const values = [date, title, success, struggle, content, imageURL];
 
     db.run(query, values, function (error) {
+      if (error) {
+        errorMessages.push("Internal server error");
+        const model = {
+          errorMessages,
+          date,
+          title,
+          success,
+          struggle,
+          content,
+        };
+        response.render("create.hbs", model);
+      }
       response.redirect("/posts");
     });
   } else {
     const query = `SELECT * FROM posts`;
 
     db.all(query, function (error, posts) {
-      const model = {
-        errorMessages,
-        posts,
-      };
-      response.render("create.hbs", model);
+      if (error) {
+        errorMessages.push("Internal server error");
+        const model = {
+          errorMessages,
+          date,
+          title,
+          success,
+          struggle,
+          content,
+          posts,
+        };
+        response.render("create.hbs", model);
+      } else {
+        const model = {
+          errorMessages,
+          date,
+          title,
+          success,
+          struggle,
+          content,
+          posts,
+        };
+        response.render("create.hbs", model);
+      }
     });
   }
 });
@@ -377,22 +426,48 @@ app.post("/editPost/:id", upload.single("photo"), function (request, response) {
 
     db.run(query, values, function (error) {
       if (error) {
-        console.log(error);
-      } else {
-        response.redirect("/posts");
+        errorMessages.push("Internal server error");
+        const model = {
+          errorMessages,
+          date,
+          title,
+          success,
+          struggle,
+          content,
+        };
+        response.render("editPost.hbs", model);
       }
+      response.redirect("/posts");
     });
   } else {
     const queryPosts = `SELECT * FROM posts WHERE id = ?`;
     const values = [id];
 
     db.get(queryPosts, values, function (error, post) {
-      const model = {
-        post,
-        id,
-        errorMessages,
-      };
-      response.render("editPost.hbs", model);
+      if (error) {
+        errorMessages.push("Internal server error");
+        const model = {
+          errorMessages,
+          date,
+          title,
+          success,
+          struggle,
+          content,
+          post,
+        };
+        response.render("editPost.hbs", model);
+      } else {
+        const model = {
+          errorMessages,
+          date,
+          title,
+          success,
+          struggle,
+          content,
+          post,
+        };
+        response.render("editPost.hbs", model);
+      }
     });
   }
 });
@@ -409,6 +484,14 @@ app.post("/deletePost/:id", function (request, response) {
   const query = `DELETE FROM posts WHERE id = ?;`;
 
   db.run(query, values, function (error) {
+    if (error) {
+      errorMessages.push("Internal server error");
+      const model = {
+        errorMessages,
+        id,
+      };
+      response.render("posts.hbs", model);
+    }
     response.redirect("/posts");
   });
 });
@@ -458,22 +541,40 @@ app.post("/editComment/:id/:postID", function (request, response) {
 
     db.run(query, values, function (error) {
       if (error) {
-        console.log(error);
-      } else {
-        response.redirect("/posts/" + postID);
+        errorMessages.push("Internal server error");
+        const model = {
+          errorMessages,
+          id,
+          postID,
+          comment,
+        };
+        response.render("editComment.hbs", model);
       }
+      response.redirect("/posts/" + postID);
     });
   } else {
     const queryPosts = `SELECT * FROM comments WHERE id = ?`;
     const values = [id];
 
     db.get(queryPosts, values, function (error, comment) {
-      const model = {
-        comment,
-        id,
-        errorMessages,
-      };
-      response.render("editComment.hbs", model);
+      if (error) {
+        errorMessages.push("Internal server error");
+        const model = {
+          errorMessages,
+          id,
+          postID,
+          comment,
+        };
+        response.render("editComment.hbs", model);
+      } else {
+        const model = {
+          errorMessages,
+          id,
+          postID,
+          comment,
+        };
+        response.render("editComment.hbs", model);
+      }
     });
   }
 });
@@ -491,7 +592,15 @@ app.post("/deleteComment/:id/:postID", function (request, response) {
   const query = `DELETE FROM comments WHERE id = ?;`;
 
   db.run(query, values, function (error) {
-    console.log(error);
+    if (error) {
+      errorMessages.push("Internal server error");
+      const model = {
+        errorMessages,
+        id,
+        postID,
+      };
+      response.render("posts.hbs", model);
+    }
     response.redirect("/posts/" + postID);
   });
 });
@@ -548,22 +657,45 @@ app.post("/editFeedback/:id", function (request, response) {
 
     db.run(query, values, function (error) {
       if (error) {
-        console.log(error);
-      } else {
-        response.redirect("/feedback");
+        errorMessages.push("Internal server error");
+        const model = {
+          errorMessages,
+          name,
+          email,
+          feedback,
+          rate,
+        };
+        response.render("editFeedback.hbs", model);
       }
+      response.redirect("/feedback");
     });
   } else {
     const queryPosts = `SELECT * FROM feedback WHERE id = ?`;
     const values = [id];
 
     db.get(queryPosts, values, function (error, oneFeedback) {
-      const model = {
-        oneFeedback,
-        id,
-        errorMessages,
-      };
-      response.render("editFeedback.hbs", model);
+      if (error) {
+        errorMessages.push("Internal server error");
+        const model = {
+          errorMessages,
+          name,
+          email,
+          feedback,
+          rate,
+          oneFeedback,
+        };
+        response.render("editFeedback.hbs", model);
+      } else {
+        const model = {
+          errorMessages,
+          name,
+          email,
+          feedback,
+          rate,
+          oneFeedback,
+        };
+        response.render("editFeedback.hbs", model);
+      }
     });
   }
 });
@@ -580,6 +712,14 @@ app.post("/deleteFeedback/:id", function (request, response) {
   const query = `DELETE FROM feedback WHERE id = ?;`;
 
   db.run(query, values, function (error) {
+    if (error) {
+      errorMessages.push("Internal server error");
+      const model = {
+        errorMessages,
+        id,
+      };
+      response.render("feedback.hbs", model);
+    }
     response.redirect("/feedback");
   });
 });
@@ -670,7 +810,6 @@ app.get("/feedback/review", function (request, response) {
     const model = {
       errorMessages,
     };
-    console.log(errorMessages);
     response.render("feedback.hbs", model);
   }
 });
@@ -689,6 +828,7 @@ app.post("/contact", function (request, response) {
     feedback,
     rate
   );
+  console.log(errorMessages);
 
   if (errorMessages.length == 0) {
     const query = `INSERT INTO feedback (name, email, feedback, rate) VALUES(?, ?, ?, ?)`;
@@ -696,17 +836,45 @@ app.post("/contact", function (request, response) {
     const values = [name, email, feedback, rate];
 
     db.run(query, values, function (error) {
-      response.redirect("/thankYou");
+      if (error) {
+        errorMessages.push("Internal server error");
+        const model = {
+          errorMessages,
+          name,
+          email,
+          feedback,
+          rate,
+        };
+        response.render("contact.hbs", model);
+      }
+      // response.redirect("/thankYou");
     });
   } else {
+    console.log("hello");
     const query = `SELECT * FROM feedback`;
 
     db.all(query, function (error, feedback) {
-      const model = {
-        feedback,
-        errorMessages,
-      };
-      response.render("contact.hbs", model);
+      if (error) {
+        errorMessages.push("Internal server error");
+        const model = {
+          errorMessages,
+          name,
+          email,
+          feedback,
+          rate,
+        };
+
+        response.render("contact.hbs", model);
+      } else {
+        const model = {
+          errorMessages,
+          name,
+          email,
+          feedback,
+          rate,
+        };
+        response.render("contact.hbs", model);
+      }
     });
   }
 });

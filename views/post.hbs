@@ -3,13 +3,6 @@
     <a href="/posts" id="goBack">go back</a>
     <h1>comment below!</h1>
   </div>
-  {{#if errorMessages.length}}
-              {{#each errorMessages}}
-                <div class="alert alert-danger" role="alert">
-                  {{this}}
-                </div>
-              {{/each}}
-            {{/if}}
   {{#if post}}
     <div class="post">
       <h4 class="title">{{post.title}}</h4>
