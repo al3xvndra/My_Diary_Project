@@ -1,7 +1,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>my_diary</title>
+    <title>My Virtual Diary</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/css/fontawesome.min.css"
@@ -31,7 +31,7 @@
       <a href="/contact">contact</a>
       <a href="/about">about</a>
       {{#if session.isLoggedIn}}
-        <a href="/create" id="afterLogIn">create</a>
+        <a href="/createPost" id="afterLogIn">create</a>
         <a href="/feedback" id="afterLogIn">feedback</a>
         <form action="/logOut" method="post">
           <input id="logOut" type="submit" value="LOG OUT" />

@@ -3,6 +3,7 @@ const expressHandlebars = require("express-handlebars");
 const bodyParser = require("body-parser");
 const sqlite3 = require("sqlite3");
 const like = require("like");
+const bcrypt = require("bcrypt");
 const multer = require("multer");
 const db = new sqlite3.Database("database.db");
 const expressSession = require("express-session");
@@ -10,8 +11,8 @@ const app = express();
 const minRate = 1;
 const maxRate = 5;
 const minLength = 0;
-const adminUsername = "alex";
-const adminPassword = "me";
+const adminUsername = "admin";
+const adminPassword = "difficultPasswordToGuess124";
 
 const storage = multer.diskStorage({
   destination(request, file, cb) {
@@ -89,16 +90,15 @@ app.use(function (request, response, next) {
 
 function getErrorMessagesForFilter(rate, name) {
   const errorMessages = [];
-  if (rate == "" && name == "") {
-    errorMessages.push("Both filter fields can't be empty.");
+  if (isNaN(rate) && name == "") {
+    errorMessages.push("Please enter valid rate and name");
   }
-  if (isNaN(rate)) {
-    errorMessages.push("Rate must be a number.");
-  } else if (rate < minRate) {
+  if (rate < minRate) {
     errorMessages.push(
       "Please enter a rate between " + minRate + " and " + maxRate + "."
     );
-  } else if (maxRate < grade) {
+  }
+  if (rate > maxRate) {
     errorMessages.push(
       "Please enter a rate between " + minRate + " and " + maxRate + "."
     );
@@ -150,6 +150,7 @@ function getErrorMessagesForFeedback(name, email, feedback, rate) {
       "Please enter a rate between " + minRate + " and " + maxRate + "."
     );
   }
+
   if (name.length == minLength) {
     errorMessages.push("The name field can't be empty.");
   }
@@ -172,10 +173,10 @@ function getErrorMessagesForLogIn(
   const errorMessages = [];
 
   if (enteredUsername !== adminUsername) {
-    errorMessages.push("Wrong username or parssword");
+    errorMessages.push("Wrong username or password");
   }
   if (enteredPassword !== adminPassword) {
-    errorMessages.push("Wrong username or parssword");
+    errorMessages.push("Wrong username or password");
   }
   return errorMessages;
 }
@@ -280,7 +281,9 @@ app.post("/posts/:id", function (request, response) {
   }
 });
 
-app.get("/create", function (request, response) {
+//create page
+
+app.get("/createPost", function (request, response) {
   if (request.session.isLoggedIn) {
     response.render("create.hbs");
   } else {
@@ -288,7 +291,7 @@ app.get("/create", function (request, response) {
   }
 });
 
-app.post("/create", upload.single("photo"), function (request, response) {
+app.post("/createPost", upload.single("photo"), function (request, response) {
   const date = request.body.postDate;
   const title = request.body.postTitle;
   const success = request.body.postSuccess;
@@ -749,68 +752,75 @@ app.get("/feedback", function (request, response) {
 });
 
 app.get("/feedback/review", function (request, response) {
-  const rate = request.query.filterRate;
+  const rate = parseInt(request.query.filterRate, 10);
   const name = request.query.filterName;
-  if ((name, rate)) {
-    const values = ["%" + name + "%", "%" + rate + "%"];
-    const query = `SELECT * FROM feedback WHERE name LIKE ? AND rate LIKE ?`;
-    db.all(query, values, function (error, feedback) {
-      const errorMessages = [];
-      if (error) {
-        errorMessages.push("Internal server error");
-      }
-      const model = {
-        errorMessages,
-        feedback,
-      };
-      if (request.session.isLoggedIn) {
-        response.render("feedback.hbs", model);
-      } else {
-        response.redirect("/logIn");
-      }
-    });
-  } else if (name) {
-    const values = ["%" + name + "%"];
-    const query = `SELECT * FROM feedback WHERE name LIKE ?`;
-    db.all(query, values, function (error, feedback) {
-      const errorMessages = [];
-      if (error) {
-        errorMessages.push("Internal server error");
-      }
-      const model = {
-        errorMessages,
-        feedback,
-      };
-      if (request.session.isLoggedIn) {
-        response.render("feedback.hbs", model);
-      } else {
-        response.redirect("/logIn");
-      }
-    });
-  } else if (rate) {
-    const values = ["%" + rate + "%"];
-    const query = `SELECT * FROM feedback WHERE rate LIKE ?`;
-    db.all(query, values, function (error, feedback) {
-      const errorMessages = [];
-      if (error) {
-        errorMessages.push("Internal server error");
-      }
-      const model = {
-        errorMessages,
-        feedback,
-      };
-      if (request.session.isLoggedIn) {
-        response.render("feedback.hbs", model);
-      } else {
-        response.redirect("/logIn");
-      }
-    });
+
+  if (!request.session.isLoggedIn) {
+    response.redirect("/logIn");
   } else {
-    const errorMessages = getErrorMessagesForFilter(rate, name);
-    const model = {
-      errorMessages,
-    };
-    response.render("feedback.hbs", model);
+    if (name && rate) {
+      const values = ["%" + name + "%", "%" + rate + "%"];
+      const query = `SELECT * FROM feedback WHERE name LIKE ? AND rate LIKE ?`;
+      db.all(query, values, function (error, feedback) {
+        const errorMessages = [];
+        if (error) {
+          errorMessages.push("Internal server error");
+          const model = {
+            errorMessages,
+            feedback,
+          };
+          response.render("feedback.hbs", model);
+        } else {
+          const model = {
+            feedback,
+          };
+          response.render("feedback.hbs", model);
+        }
+      });
+    } else if (name) {
+      const values = ["%" + name + "%"];
+      const query = `SELECT * FROM feedback WHERE name LIKE ?`;
+      db.all(query, values, function (error, feedback) {
+        const errorMessages = [];
+        if (error) {
+          errorMessages.push("Internal server error");
+          const model = {
+            errorMessages,
+            feedback,
+          };
+          response.render("feedback.hbs", model);
+        } else {
+          const model = {
+            feedback,
+          };
+          response.render("feedback.hbs", model);
+        }
+      });
+    } else if (1 <= rate && rate <= 5) {
+      const values = ["%" + rate + "%"];
+      const query = `SELECT * FROM feedback WHERE rate LIKE ?`;
+      db.all(query, values, function (error, feedback) {
+        if (error) {
+          const model = {
+            errorMessages: ["Internal server error"],
+            feedback,
+          };
+          response.render("feedback.hbs", model);
+        } else {
+          const model = {
+            feedback,
+          };
+          response.render("feedback.hbs", model);
+        }
+      });
+    } else {
+      const errorMessages = getErrorMessagesForFilter(rate, name);
+      const model = {
+        errorMessages,
+      };
+      console.log(errorMessages);
+      response.render("feedback.hbs", model);
+    }
   }
 });
 
@@ -847,7 +857,7 @@ app.post("/contact", function (request, response) {
         };
         response.render("contact.hbs", model);
       }
-      // response.redirect("/thankYou");
+      response.redirect("/thankYou");
     });
   } else {
     console.log("hello");
