@@ -33,7 +33,9 @@ db.run(
   title TEXT,
   success TEXT,
   struggle TEXT, 
-  content TEXT)`
+  content TEXT,
+  date TEXT,
+  imageURL TEXT)`
 );
 
 db.run(
@@ -41,7 +43,8 @@ db.run(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT,
   feedback TEXT,
-  email TEXT)`
+  email TEXT,
+  rate INTEGER)`
 );
 
 db.run(
@@ -437,6 +440,7 @@ app.post("/editPost/:id", upload.single("photo"), function (request, response) {
           success,
           struggle,
           content,
+          id,
         };
         response.render("editPost.hbs", model);
       }
@@ -450,24 +454,28 @@ app.post("/editPost/:id", upload.single("photo"), function (request, response) {
       if (error) {
         errorMessages.push("Internal server error");
         const model = {
+          post: {
+            date,
+            title,
+            success,
+            struggle,
+            content,
+          },
+          id,
           errorMessages,
-          date,
-          title,
-          success,
-          struggle,
-          content,
-          post,
         };
         response.render("editPost.hbs", model);
       } else {
         const model = {
+          post: {
+            date,
+            title,
+            success,
+            struggle,
+            content,
+          },
+          id,
           errorMessages,
-          date,
-          title,
-          success,
-          struggle,
-          content,
-          post,
         };
         response.render("editPost.hbs", model);
       }
@@ -667,6 +675,7 @@ app.post("/editFeedback/:id", function (request, response) {
           email,
           feedback,
           rate,
+          id,
         };
         response.render("editFeedback.hbs", model);
       }
@@ -686,16 +695,19 @@ app.post("/editFeedback/:id", function (request, response) {
           feedback,
           rate,
           oneFeedback,
+          id,
         };
         response.render("editFeedback.hbs", model);
       } else {
         const model = {
+          oneFeedback: {
+            name,
+            email,
+            feedback,
+            rate,
+          },
+          id,
           errorMessages,
-          name,
-          email,
-          feedback,
-          rate,
-          oneFeedback,
         };
         response.render("editFeedback.hbs", model);
       }
@@ -818,7 +830,6 @@ app.get("/feedback/review", function (request, response) {
       const model = {
         errorMessages,
       };
-      console.log(errorMessages);
       response.render("feedback.hbs", model);
     }
   }
@@ -838,7 +849,6 @@ app.post("/contact", function (request, response) {
     feedback,
     rate
   );
-  console.log(errorMessages);
 
   if (errorMessages.length == 0) {
     const query = `INSERT INTO feedback (name, email, feedback, rate) VALUES(?, ?, ?, ?)`;
@@ -860,10 +870,9 @@ app.post("/contact", function (request, response) {
       response.redirect("/thankYou");
     });
   } else {
-    console.log("hello");
     const query = `SELECT * FROM feedback`;
 
-    db.all(query, function (error, feedback) {
+    db.all(query, function (error, feedbackOne) {
       if (error) {
         errorMessages.push("Internal server error");
         const model = {
