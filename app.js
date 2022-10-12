@@ -772,7 +772,7 @@ app.get("/feedback/review", function (request, response) {
   } else {
     if (name && rate) {
       const values = ["%" + name + "%", "%" + rate + "%"];
-      const query = `SELECT * FROM feedback WHERE name LIKE ? AND rate LIKE ?`;
+      const query = `SELECT * FROM feedback WHERE name LIKE ? AND rate LIKE ? ORDER BY id DESC`;
       db.all(query, values, function (error, feedback) {
         const errorMessages = [];
         if (error) {
@@ -791,7 +791,7 @@ app.get("/feedback/review", function (request, response) {
       });
     } else if (name) {
       const values = ["%" + name + "%"];
-      const query = `SELECT * FROM feedback WHERE name LIKE ?`;
+      const query = `SELECT * FROM feedback WHERE name LIKE ? ORDER BY id DESC`;
       db.all(query, values, function (error, feedback) {
         const errorMessages = [];
         if (error) {
@@ -810,7 +810,7 @@ app.get("/feedback/review", function (request, response) {
       });
     } else if (1 <= rate && rate <= 5) {
       const values = ["%" + rate + "%"];
-      const query = `SELECT * FROM feedback WHERE rate LIKE ?`;
+      const query = `SELECT * FROM feedback WHERE rate LIKE ? ORDER BY id DESC`;
       db.all(query, values, function (error, feedback) {
         if (error) {
           const model = {

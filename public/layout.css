@@ -58,6 +58,10 @@ p {
   border-radius: 5px;
 }
 
+#hamburgerMenu {
+  display: none;
+}
+
 /* home page */
 
 .header {
@@ -375,10 +379,7 @@ form {
 
 @media only screen and (max-width: 600px) {
   nav {
-    padding-left: 2%;
-    padding-right: 2%;
-    height: 2rem;
-    font-size: 9px;
+    display: none;
   }
 
   a {
@@ -386,21 +387,72 @@ form {
   }
 
   h1 {
-    font-size: 20px !important;
+    font-size: 30px !important;
   }
 
   h5 {
-    font-size: 15px !important;
+    font-size: 12pt !important;
   }
 
   #logOut {
     padding: 5px;
   }
 
+  #menu {
+    position: relative;
+    display: inline-block;
+    text-align: left;
+    margin: 3% 0 3% 6%;
+    width: 30pt;
+    height: 30pt;
+  }
+
+  #menu:before {
+    content: "\2630";
+    color: black;
+    font-size: 25pt;
+    margin: 3% 0 0 4%;
+  }
+
+  #menu:focus {
+    pointer-events: none;
+  }
+
+  #menu:focus #menuDropdown {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  #menuDropdown {
+    background-color: #ffffff;
+    border: 1px solid black;
+    margin: auto;
+    padding: 10px;
+    pointer-events: auto;
+    position: absolute;
+    width: 300px;
+    z-index: 1;
+    opacity: 0;
+    visibility: hidden;
+    transition: visibility 1s;
+  }
+
+  #menuDropdown a {
+    background: transparent;
+    border: none;
+    outline: 0;
+    display: block;
+    color: white;
+    text-decoration: none;
+    font-family: "Raleway";
+    width: auto;
+    padding: 5px;
+  }
+
   /* home page */
 
   .header {
-    padding-top: 3rem;
+    padding-top: 0.5rem;
   }
 
   .homePost {
@@ -436,10 +488,9 @@ form {
 */
 
 /* resources
+dropdown menu
+https://lage.us/CSS-Onclick-Dropdown-Menu.html
 
 star review:
-https://www.youtube.com/watch?v=Ep78KjstQuw&ab_channel=OnlineTutorials
-
-photo upload:
 https://www.youtube.com/watch?v=Ep78KjstQuw&ab_channel=OnlineTutorials
 */

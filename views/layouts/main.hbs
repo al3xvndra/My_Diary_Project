@@ -41,6 +41,28 @@
         <a href="/logIn">log in</a>
       {{/unless}}
     </nav>
+
+    {{! dropdown menu
+    https://lage.us/CSS-Onclick-Dropdown-Menu.html }}
+
+    <div tabindex="0" id="menu">
+      <div id="menuDropdown">
+        <a href="/">home</a>
+        <a href="/posts">posts</a>
+        <a href="/contact">contact</a>
+        <a href="/about">about</a>
+        {{#if session.isLoggedIn}}
+          <a href="/createPost" id="afterLogIn">create</a>
+          <a href="/feedback" id="afterLogIn">feedback</a>
+          <form action="/logOut" method="post">
+            <input id="logOut" type="submit" value="LOG OUT" />
+          </form>
+        {{/if}}
+        {{#unless session.isLoggedIn}}
+          <a href="/logIn">log in</a>
+        {{/unless}}
+      </div>
+    </div>
     <main>
       {{{body}}}
     </main>
