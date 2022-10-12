@@ -1,11 +1,15 @@
 const express = require("express");
 const expressHandlebars = require("express-handlebars");
 const bodyParser = require("body-parser");
-const sqlite3 = require("sqlite3");
+const db = require("./db.js");
+
+const postsRouter = require("./routers/postsRouter");
+const feedbackRouter = require("./routers/feedbackRouter");
+const commentsRouter = require("./routers/commentsRouter");
+
 const like = require("like");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
-const db = new sqlite3.Database("database.db");
 const expressSession = require("express-session");
 const app = express();
 const minRate = 1;
@@ -24,36 +28,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-
-db.run(`PRAGMA foreign_keys = ON`);
-
-db.run(
-  `CREATE TABLE IF NOT EXISTS posts(
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  title TEXT,
-  success TEXT,
-  struggle TEXT, 
-  content TEXT,
-  date TEXT,
-  imageURL TEXT)`
-);
-
-db.run(
-  `CREATE TABLE IF NOT EXISTS feedback(
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT,
-  feedback TEXT,
-  email TEXT,
-  rate INTEGER)`
-);
-
-db.run(
-  `CREATE TABLE IF NOT EXISTS comments(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    postID INTEGER,
-    comment TEXT,
-    FOREIGN KEY(postID) REFERENCES posts(id) ON DELETE CASCADE)`
-);
 
 app.engine(
   "hbs",
@@ -193,9 +167,7 @@ app.get("/", function (request, response) {
 //posts page
 
 app.get("/posts", function (request, response) {
-  const query = `SELECT * FROM posts ORDER BY id DESC`;
-
-  db.all(query, function (error, posts) {
+  db.getAllPosts(function (error, posts) {
     const errorMessages = [];
 
     if (error) {
@@ -214,16 +186,13 @@ app.get("/posts", function (request, response) {
 
 app.get("/posts/:id", function (request, response) {
   const id = request.params.id;
-  const queryPosts = `SELECT * FROM posts WHERE id = ?`;
-  const queryComments = `SELECT * FROM comments WHERE postID = ?`;
-  const values = [id];
   const errorMessages = [];
 
-  db.get(queryPosts, values, function (error, post) {
+  db.getOnePost(id, function (error, post) {
     if (error) {
       errorMessages.push("Internal server error");
     }
-    db.all(queryComments, values, function (error, comments) {
+    db.getCommentsFromOnePost(id, function (error, comments) {
       if (error) {
         errorMessages.push("Internal server error");
       }
@@ -242,13 +211,8 @@ app.post("/posts/:id", function (request, response) {
   const comment = request.body.comment;
 
   const errorMessages = getErrorMessagesForComments(comment);
-
   if (errorMessages.length == 0) {
-    const queryComments = `INSERT INTO comments (comment, postID) VALUES(?, ?)`;
-
-    const values = [comment, postID];
-
-    db.run(queryComments, values, function (error) {
+    db.createComment(comment, postID, function (error) {
       if (error) {
         errorMessages.push("Internal server error");
         const model = {
@@ -257,19 +221,16 @@ app.post("/posts/:id", function (request, response) {
           comment,
         };
         response.render("post.hbs", model);
+      } else {
+        response.redirect("/posts/" + postID);
       }
-      response.redirect("/posts/" + postID);
     });
   } else {
-    const queryPosts = `SELECT * FROM posts WHERE id = ?`;
-    const queryComments = `SELECT * FROM comments WHERE postID = ?`;
-    const values = [postID];
-
-    db.get(queryPosts, values, function (error, post) {
+    db.getOnePost(postID, function (error, post) {
       if (error) {
         errorMessages.push("Internal server error");
       }
-      db.all(queryComments, values, function (error, comments) {
+      db.getCommentsFromOnePost(postID, function (error, comments) {
         if (error) {
           errorMessages.push("Internal server error");
         }
@@ -320,54 +281,39 @@ app.post("/createPost", upload.single("photo"), function (request, response) {
   if (errorMessages.length == 0) {
     const imageURL = request.file.filename;
 
-    const query = `INSERT INTO posts (date, title, success, struggle, content, imageURL) VALUES(?, ?, ?, ?, ?, ?)`;
-
-    const values = [date, title, success, struggle, content, imageURL];
-
-    db.run(query, values, function (error) {
-      if (error) {
-        errorMessages.push("Internal server error");
-        const model = {
-          errorMessages,
-          date,
-          title,
-          success,
-          struggle,
-          content,
-        };
-        response.render("create.hbs", model);
+    db.createPost(
+      date,
+      title,
+      success,
+      struggle,
+      content,
+      imageURL,
+      function (error) {
+        if (error) {
+          errorMessages.push("Internal server error");
+          const model = {
+            errorMessages,
+            date,
+            title,
+            success,
+            struggle,
+            content,
+          };
+          response.render("create.hbs", model);
+        }
+        response.redirect("/posts");
       }
-      response.redirect("/posts");
-    });
+    );
   } else {
-    const query = `SELECT * FROM posts`;
-
-    db.all(query, function (error, posts) {
-      if (error) {
-        errorMessages.push("Internal server error");
-        const model = {
-          errorMessages,
-          date,
-          title,
-          success,
-          struggle,
-          content,
-          posts,
-        };
-        response.render("create.hbs", model);
-      } else {
-        const model = {
-          errorMessages,
-          date,
-          title,
-          success,
-          struggle,
-          content,
-          posts,
-        };
-        response.render("create.hbs", model);
-      }
-    });
+    const model = {
+      errorMessages,
+      date,
+      title,
+      success,
+      struggle,
+      content,
+    };
+    response.render("create.hbs", model);
   }
 });
 
@@ -376,10 +322,8 @@ app.post("/createPost", upload.single("photo"), function (request, response) {
 
 app.get("/editPost/:id", function (request, response) {
   const id = request.params.id;
-  const queryPosts = `SELECT * FROM posts WHERE id = ?`;
-  const values = [id];
 
-  db.get(queryPosts, values, function (error, post) {
+  db.getEditPost(id, function (error, post) {
     const errorMessages = [];
 
     if (error) {
@@ -390,7 +334,6 @@ app.get("/editPost/:id", function (request, response) {
       post,
       id,
     };
-
     if (request.session.isLoggedIn) {
       response.render("editPost.hbs", model);
     } else {
@@ -425,76 +368,79 @@ app.post("/editPost/:id", upload.single("photo"), function (request, response) {
 
   if (errorMessages.length == 0) {
     const imageURL = request.file.filename;
-    const query = `UPDATE posts
-  SET date = ?, title = ?, success = ?, struggle = ?, content = ?, imageURL = ? WHERE id = ?;`;
 
-    const values = [date, title, success, struggle, content, imageURL, id];
-
-    db.run(query, values, function (error) {
-      if (error) {
-        errorMessages.push("Internal server error");
-        const model = {
-          errorMessages,
-          date,
-          title,
-          success,
-          struggle,
-          content,
-          id,
-        };
-        response.render("editPost.hbs", model);
+    db.editPost(
+      date,
+      title,
+      success,
+      struggle,
+      content,
+      imageURL,
+      id,
+      function (error) {
+        if (error) {
+          errorMessages.push("Internal server error");
+          const model = {
+            errorMessages,
+            date,
+            title,
+            success,
+            struggle,
+            content,
+            id,
+          };
+          response.render("editPost.hbs", model);
+        }
+        response.redirect("/posts");
       }
-      response.redirect("/posts");
-    });
+    );
   } else {
-    const queryPosts = `SELECT * FROM posts WHERE id = ?`;
-    const values = [id];
+    // const queryPosts = `SELECT * FROM posts WHERE id = ?`;
+    // const values = [id];
 
-    db.get(queryPosts, values, function (error, post) {
-      if (error) {
-        errorMessages.push("Internal server error");
-        const model = {
-          post: {
-            date,
-            title,
-            success,
-            struggle,
-            content,
-          },
-          id,
-          errorMessages,
-        };
-        response.render("editPost.hbs", model);
-      } else {
-        const model = {
-          post: {
-            date,
-            title,
-            success,
-            struggle,
-            content,
-          },
-          id,
-          errorMessages,
-        };
-        response.render("editPost.hbs", model);
-      }
-    });
+    // db.get(queryPosts, values, function (error, post) {
+    //   if (error) {
+    //     errorMessages.push("Internal server error");
+    //     const model = {
+    //       post: {
+    //         date,
+    //         title,
+    //         success,
+    //         struggle,
+    //         content,
+    //       },
+    //       id,
+    //       errorMessages,
+    //     };
+    //     response.render("editPost.hbs", model);
+    //   } else {
+    const model = {
+      post: {
+        date,
+        title,
+        success,
+        struggle,
+        content,
+      },
+      id,
+      errorMessages,
+    };
+    response.render("editPost.hbs", model);
   }
 });
+//   }
+// });
 
 //delete post
 
 app.post("/deletePost/:id", function (request, response) {
   const id = request.params.id;
-  const values = [id];
 
   if (!request.session.isLoggedIn) {
     errorMessages.push("You have to log in");
   }
-  const query = `DELETE FROM posts WHERE id = ?;`;
 
-  db.run(query, values, function (error) {
+  db.deletePost(id, function (error) {
     if (error) {
       errorMessages.push("Internal server error");
       const model = {
@@ -511,10 +457,8 @@ app.post("/deletePost/:id", function (request, response) {
 
 app.get("/editComment/:id", function (request, response) {
   const id = request.params.id;
-  const queryPosts = `SELECT * FROM comments WHERE id = ?`;
-  const values = [id];
 
-  db.get(queryPosts, values, function (error, comment) {
+  db.getEditComment(id, function (error, comment) {
     const errorMessages = [];
 
     if (error) {
@@ -538,7 +482,6 @@ app.post("/editComment/:id/:postID", function (request, response) {
   const id = request.params.id;
   const postID = request.params.postID;
   const comment = request.body.comment;
-  const values = [comment, id];
 
   const errorMessages = getErrorMessagesForComments(comment);
 
@@ -547,10 +490,7 @@ app.post("/editComment/:id/:postID", function (request, response) {
   }
 
   if (errorMessages.length == 0) {
-    const query = `UPDATE comments
-  SET comment = ? WHERE id = ?;`;
-
-    db.run(query, values, function (error) {
+    db.editComment(comment, id, function (error) {
       if (error) {
         errorMessages.push("Internal server error");
         const model = {
@@ -564,10 +504,7 @@ app.post("/editComment/:id/:postID", function (request, response) {
       response.redirect("/posts/" + postID);
     });
   } else {
-    const queryPosts = `SELECT * FROM comments WHERE id = ?`;
-    const values = [id];
-
-    db.get(queryPosts, values, function (error, comment) {
+    db.extraComment(id, function (error, comment) {
       if (error) {
         errorMessages.push("Internal server error");
         const model = {
@@ -595,14 +532,11 @@ app.post("/editComment/:id/:postID", function (request, response) {
 app.post("/deleteComment/:id/:postID", function (request, response) {
   const id = request.params.id;
   const postID = request.params.postID;
-  const values = [id];
 
   if (!request.session.isLoggedIn) {
     errorMessages.push("You have to log in");
   }
-  const query = `DELETE FROM comments WHERE id = ?;`;
-
-  db.run(query, values, function (error) {
+  db.deleteComment(id, function (error) {
     if (error) {
       errorMessages.push("Internal server error");
       const model = {
@@ -620,10 +554,8 @@ app.post("/deleteComment/:id/:postID", function (request, response) {
 
 app.get("/editFeedback/:id", function (request, response) {
   const id = request.params.id;
-  const queryPosts = `SELECT * FROM feedback WHERE id = ?`;
-  const values = [id];
 
-  db.get(queryPosts, values, function (error, oneFeedback) {
+  db.getEditFeedback(id, function (error, oneFeedback) {
     const errorMessages = [];
 
     if (error) {
@@ -647,9 +579,8 @@ app.post("/editFeedback/:id", function (request, response) {
   const id = request.params.id;
   const name = request.body.feedbackName;
   const email = request.body.feedbackEmail;
-  const feedback = request.body.feedback;
+  const feedback = request.body.feedbackMessage;
   const rate = request.body.rate;
-  const values = [name, email, feedback, rate, id];
 
   const errorMessages = getErrorMessagesForFeedback(
     name,
@@ -663,10 +594,7 @@ app.post("/editFeedback/:id", function (request, response) {
   }
 
   if (errorMessages.length == 0) {
-    const query = `UPDATE feedback
-  SET name = ?, email = ?, feedback = ?, rate = ? WHERE id = ?;`;
-
-    db.run(query, values, function (error) {
+    db.editFeedback(name, email, feedback, rate, id, function (error) {
       if (error) {
         errorMessages.push("Internal server error");
         const model = {
@@ -682,10 +610,7 @@ app.post("/editFeedback/:id", function (request, response) {
       response.redirect("/feedback");
     });
   } else {
-    const queryPosts = `SELECT * FROM feedback WHERE id = ?`;
-    const values = [id];
-
-    db.get(queryPosts, values, function (error, oneFeedback) {
+    db.extraFeedback(id, function (error, oneFeedback) {
       if (error) {
         errorMessages.push("Internal server error");
         const model = {
@@ -719,14 +644,12 @@ app.post("/editFeedback/:id", function (request, response) {
 
 app.post("/deleteFeedback/:id", function (request, response) {
   const id = request.params.id;
-  const values = [id];
 
   if (!request.session.isLoggedIn) {
     errorMessages.push("You have to log in");
   }
-  const query = `DELETE FROM feedback WHERE id = ?;`;
 
-  db.run(query, values, function (error) {
+  db.deleteFeedback(id, function (error) {
     if (error) {
       errorMessages.push("Internal server error");
       const model = {
@@ -742,9 +665,7 @@ app.post("/deleteFeedback/:id", function (request, response) {
 //feedback page
 
 app.get("/feedback", function (request, response) {
-  const query = `SELECT * FROM feedback ORDER BY id DESC`;
-
-  db.all(query, function (error, feedback) {
+  db.getAllFeedback(function (error, feedback) {
     const errorMessages = [];
 
     if (error) {
@@ -771,9 +692,7 @@ app.get("/feedback/review", function (request, response) {
     response.redirect("/logIn");
   } else {
     if (name && rate) {
-      const values = ["%" + name + "%", "%" + rate + "%"];
-      const query = `SELECT * FROM feedback WHERE name LIKE ? AND rate LIKE ? ORDER BY id DESC`;
-      db.all(query, values, function (error, feedback) {
+      db.getFeedbackFullReview(name, rate, function (error, feedback) {
         const errorMessages = [];
         if (error) {
           errorMessages.push("Internal server error");
@@ -790,9 +709,7 @@ app.get("/feedback/review", function (request, response) {
         }
       });
     } else if (name) {
-      const values = ["%" + name + "%"];
-      const query = `SELECT * FROM feedback WHERE name LIKE ? ORDER BY id DESC`;
-      db.all(query, values, function (error, feedback) {
+      db.getFeedbackName(name, function (error, feedback) {
         const errorMessages = [];
         if (error) {
           errorMessages.push("Internal server error");
@@ -809,9 +726,7 @@ app.get("/feedback/review", function (request, response) {
         }
       });
     } else if (1 <= rate && rate <= 5) {
-      const values = ["%" + rate + "%"];
-      const query = `SELECT * FROM feedback WHERE rate LIKE ? ORDER BY id DESC`;
-      db.all(query, values, function (error, feedback) {
+      db.getFeedbackRate(rate, function (error, feedback) {
         if (error) {
           const model = {
             errorMessages: ["Internal server error"],
@@ -840,7 +755,7 @@ app.get("/feedback/review", function (request, response) {
 app.post("/contact", function (request, response) {
   const name = request.body.feedbackName;
   const email = request.body.feedbackEmail;
-  const feedback = request.body.feedback;
+  const feedback = request.body.feedbackMessage;
   const rate = request.body.rate;
 
   const errorMessages = getErrorMessagesForFeedback(
@@ -851,11 +766,7 @@ app.post("/contact", function (request, response) {
   );
 
   if (errorMessages.length == 0) {
-    const query = `INSERT INTO feedback (name, email, feedback, rate) VALUES(?, ?, ?, ?)`;
-
-    const values = [name, email, feedback, rate];
-
-    db.run(query, values, function (error) {
+    db.createFeedback(name, email, feedback, rate, function (error) {
       if (error) {
         errorMessages.push("Internal server error");
         const model = {
@@ -870,9 +781,7 @@ app.post("/contact", function (request, response) {
       response.redirect("/thankYou");
     });
   } else {
-    const query = `SELECT * FROM feedback`;
-
-    db.all(query, function (error, feedbackOne) {
+    db.extraContact(function (error, feedbackOne) {
       if (error) {
         errorMessages.push("Internal server error");
         const model = {
