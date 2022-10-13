@@ -246,9 +246,3 @@ exports.extraContact = function (callback) {
     callback(error, feedbackOne);
   });
 };
-
-exports.createComment = function (callback) {};
-exports.createComment = function (callback) {};
-exports.createComment = function (callback) {};
-exports.createComment = function (callback) {};
-exports.createComment = function (callback) {};
