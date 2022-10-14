@@ -58,6 +58,10 @@ p {
   border-radius: 5px;
 }
 
+#logOutSmall {
+  display: none;
+}
+
 #hamburgerMenu {
   display: none;
 }
@@ -399,19 +403,23 @@ form {
   }
 
   #menu {
-    position: relative;
-    display: inline-block;
+    position: fixed;
+    display: block;
     text-align: left;
-    margin: 3% 0 3% 6%;
-    width: 30pt;
+    margin: 0 0 3% 6%;
+    background-color: #ffffff;
+    width: 270pt;
     height: 30pt;
+    z-index: 100;
   }
 
   #menu:before {
     content: "\2630";
     color: black;
     font-size: 25pt;
-    margin: 3% 0 0 4%;
+    margin: 0;
+    width: 100%;
+    z-index: 100;
   }
 
   #menu:focus {
@@ -431,7 +439,7 @@ form {
     pointer-events: auto;
     position: absolute;
     width: 300px;
-    z-index: 1;
+    z-index: 100;
     opacity: 0;
     visibility: hidden;
     transition: visibility 1s;
@@ -444,15 +452,28 @@ form {
     display: block;
     color: white;
     text-decoration: none;
-    font-family: "Raleway";
+    font-size: 14px;
+    font-family: Barlow;
+    text-transform: uppercase;
+    letter-spacing: 0.095em;
     width: auto;
     padding: 5px;
+  }
+
+  #logOutSmall {
+    display: block;
+    border: none;
+    background-color: #ffffff;
+    font-size: 14px;
+    font-family: Barlow;
+    text-transform: uppercase;
+    letter-spacing: 0.095em;
   }
 
   /* home page */
 
   .header {
-    padding-top: 0.5rem;
+    padding-top: 3rem;
   }
 
   .homePost {
@@ -466,7 +487,29 @@ form {
   }
 
   #signature {
-    font-size: 50px !important;
+    font-size: 30px !important;
+  }
+
+  .bi-check2 {
+    width: 20px;
+    height: 20px;
+  }
+
+  .bi-x-lg {
+    width: 20px;
+    height: 20px;
+  }
+
+  #buttonAdd {
+    width: 100%;
+  }
+
+  .addComment {
+    width: auto;
+    margin: 0 auto 2rem auto;
+    padding: 0%;
+    display: flex;
+    justify-content: center;
   }
 
   /* contact page */
@@ -478,6 +521,17 @@ form {
   .socialMedia {
     width: 100%;
   }
+}
+
+/* feedback page */
+
+#filterBar {
+  flex-direction: column;
+}
+
+.starFilter {
+  width: 90%;
+  margin: 4rem auto 3rem auto;
 }
 
 /* icons
