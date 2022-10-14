@@ -16,7 +16,8 @@ const minRate = 1;
 const maxRate = 5;
 const minLength = 0;
 const adminUsername = "admin";
-const adminPassword = "difficultPasswordToGuess124";
+const adminPasswordHash =
+  "$2b$10$ZQ/0fpmw8vjr8pz3Pr1H8elEudI25tkSWAof0D2AFLOsP0DKJonjy";
 
 const storage = multer.diskStorage({
   destination(request, file, cb) {
@@ -141,18 +142,13 @@ function getErrorMessagesForFeedback(name, email, feedback, rate) {
   return errorMessages;
 }
 
-function getErrorMessagesForLogIn(
-  enteredUsername,
-  enteredPassword,
-  adminUsername,
-  adminPassword
-) {
+function getErrorMessagesForLogIn(enteredUsername, adminUsername, isCorrect) {
   const errorMessages = [];
 
   if (enteredUsername !== adminUsername) {
     errorMessages.push("Wrong username or password");
   }
-  if (enteredPassword !== adminPassword) {
+  if (isCorrect == false) {
     errorMessages.push("Wrong username or password");
   }
   return errorMessages;
@@ -832,12 +828,12 @@ app.get("/logIn", function (request, response) {
 app.post("/logIn", function (request, response) {
   const enteredUsername = request.body.username;
   const enteredPassword = request.body.password;
+  const isCorrect = bcrypt.compareSync(enteredPassword, adminPasswordHash);
 
   const errorMessages = getErrorMessagesForLogIn(
     enteredUsername,
-    enteredPassword,
     adminUsername,
-    adminPassword
+    isCorrect
   );
   if (errorMessages.length == 0) {
     request.session.isLoggedIn = true;
