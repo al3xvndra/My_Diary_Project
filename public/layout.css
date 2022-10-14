@@ -93,6 +93,14 @@ p {
 
 /* posts page */
 
+.headerOne {
+  display: flex;
+  padding-top: 8rem;
+  padding-bottom: 5%;
+  font-family: "Abril Fatface", cursive;
+  justify-content: center;
+}
+
 .post {
   width: 50%;
   border: 1px solid;
@@ -373,14 +381,6 @@ form {
   margin-bottom: 0.5rem;
 }
 
-/* .bi-check2 {
-  color: #5fe17d;
-}
-
-.bi-x-lg {
-  color: #e15f5f;
-} */
-
 @media only screen and (max-width: 600px) {
   nav {
     display: none;
@@ -473,6 +473,8 @@ form {
   /* home page */
 
   .header {
+    margin: auto;
+    width: 90%;
     padding-top: 3rem;
   }
 
@@ -482,8 +484,18 @@ form {
 
   /* posts page */
 
+  .headerOne {
+    margin: auto auto 4rem auto;
+    width: 90%;
+    padding-top: 3rem;
+  }
+
   .post {
     width: 90%;
+  }
+
+  .commentsSection {
+    width: 100%;
   }
 
   #signature {
@@ -521,17 +533,17 @@ form {
   .socialMedia {
     width: 100%;
   }
-}
 
-/* feedback page */
+  /* feedback page */
 
-#filterBar {
-  flex-direction: column;
-}
+  #filterBar {
+    flex-direction: column;
+  }
 
-.starFilter {
-  width: 90%;
-  margin: 4rem auto 3rem auto;
+  .starFilter {
+    width: 90%;
+    margin: 4rem auto 3rem auto;
+  }
 }
 
 /* icons

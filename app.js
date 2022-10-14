@@ -3,10 +3,6 @@ const expressHandlebars = require("express-handlebars");
 const bodyParser = require("body-parser");
 const db = require("./db.js");
 
-const postsRouter = require("./routers/postsRouter");
-const feedbackRouter = require("./routers/feedbackRouter");
-const commentsRouter = require("./routers/commentsRouter");
-
 const like = require("like");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
