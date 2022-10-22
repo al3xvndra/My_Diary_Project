@@ -2,7 +2,6 @@ const express = require("express");
 const expressHandlebars = require("express-handlebars");
 const bodyParser = require("body-parser");
 const db = require("./db.js");
-
 const like = require("like");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
