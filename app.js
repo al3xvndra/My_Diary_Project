@@ -386,25 +386,6 @@ app.post("/editPost/:id", upload.single("photo"), function (request, response) {
       }
     );
   } else {
-    // const queryPosts = `SELECT * FROM posts WHERE id = ?`;
-    // const values = [id];
-
-    // db.get(queryPosts, values, function (error, post) {
-    //   if (error) {
-    //     errorMessages.push("Internal server error");
-    //     const model = {
-    //       post: {
-    //         date,
-    //         title,
-    //         success,
-    //         struggle,
-    //         content,
-    //       },
-    //       id,
-    //       errorMessages,
-    //     };
-    //     response.render("editPost.hbs", model);
-    //   } else {
     const model = {
       post: {
         date,
@@ -419,8 +400,6 @@ app.post("/editPost/:id", upload.single("photo"), function (request, response) {
     response.render("editPost.hbs", model);
   }
 });
-//   }
-// });
 
 //delete post
 
