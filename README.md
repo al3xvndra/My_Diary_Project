@@ -10,7 +10,7 @@ This project was developed as a course project at Jönköping University School 
 To deploy this project run
 
 ```bash
-  node app.js
+node app.js
 ```
 The app runs on http://localhost:8080
 
